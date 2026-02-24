@@ -1,4 +1,4 @@
-import { POINT_RETROGRADE_SYMBOL } from '../settings/constants/Point.js';
+import { POINT_RETROGRADE_SYMBOL_CODE } from '../settings/constants/Point.js';
 
 /**
  * @class
@@ -92,7 +92,7 @@ class SVGUtils {
   static SYMBOL_MC_CODE = "d";
   static SYMBOL_IC_CODE = "e";
 
-  static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL;
+  static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL_CODE;
 
   static SYMBOL_CONJUNCTION_CODE = "!";
   static SYMBOL_OPPOSITION_CODE = '"';

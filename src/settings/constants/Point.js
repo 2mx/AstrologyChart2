@@ -29,4 +29,4 @@ export const POINT_COLLISION_RADIUS = 12
  * @property choices M for Px symbol or N for R symbol
  * @default "M"
  */
-export const POINT_RETROGRADE_SYMBOL = "M"
+export const POINT_RETROGRADE_SYMBOL_CODE = "M"
