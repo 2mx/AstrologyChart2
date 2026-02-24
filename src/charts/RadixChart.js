@@ -80,10 +80,10 @@ class RadixChart extends Chart {
    * Get data
    * @return {Object}
    */
-  getData(){
+  getData() {
     return {
-      "points":[...this.#data.points],
-      "cusps":[...this.#data.cusps]
+      "points": [...this.#data.points],
+      "cusps": [...this.#data.cusps]
     }
   }
 
@@ -177,17 +177,17 @@ class RadixChart extends Chart {
    *
    * @return {Array<Object>}
    */
-  getAspects(fromPoints, toPoints, aspects){
-    if(!this.#data){
+  getAspects(fromPoints, toPoints, aspects) {
+    if (!this.#data) {
       return
     }
 
     fromPoints = fromPoints ?? this.#data.points
-    toPoints = toPoints ?? [...this.#data.points, {name:"AS", angle:0}, {name:"IC", angle:this.#data.cusps.at(3)}, {name:"DS", angle:this.#data.cusps.at(6)}, {name:"MC", angle:this.#data.cusps.at(9)}]
+    toPoints = toPoints ?? [...this.#data.points, { name: "AS", angle: 0 }, { name: "IC", angle: this.#data.cusps.at(3) }, { name: "DS", angle: this.#data.cusps.at(6) }, { name: "MC", angle: this.#data.cusps.at(9) }]
     aspects = aspects ?? DefaultSettings.DEFAULT_ASPECTS
 
 
-    return AspectUtils.getAspects(fromPoints, toPoints, aspects).filter( aspect => aspect.from.name != aspect.to.name)
+    return AspectUtils.getAspects(fromPoints, toPoints, aspects).filter(aspect => aspect.from.name != aspect.to.name)
   }
 
   /**
@@ -199,26 +199,26 @@ class RadixChart extends Chart {
    *
    * @return {Array<Object>}
    */
-  drawAspects( fromPoints, toPoints, aspects ){
+  drawAspects(fromPoints, toPoints, aspects) {
     const aspectsWrapper = this.#universe.getAspectsElement()
     Utils.cleanUp(aspectsWrapper.getAttribute("id"), this.#beforeCleanUpHook)
 
     const aspectsList = this.getAspects(fromPoints, toPoints, aspects)
-      .reduce( (arr, aspect) => {
+      .reduce((arr, aspect) => {
 
-        let isTheSame = arr.some( elm => {
+        let isTheSame = arr.some(elm => {
           return elm.from.name == aspect.to.name && elm.to.name == aspect.from.name
         })
 
-        if( !isTheSame ){
+        if (!isTheSame) {
           arr.push(aspect)
         }
 
         return arr
       }, [])
-      .filter( aspect =>  aspect.aspect.name != 'Conjunction')
+      .filter(aspect => aspect.aspect.name != 'Conjunction')
 
-    aspectsWrapper.appendChild( AspectUtils.drawAspects(this.getCenterCircleRadius(), this.getAscendantShift(), this.#settings, aspectsList))
+    aspectsWrapper.appendChild(AspectUtils.drawAspects(this.getCenterCircleRadius(), this.getAscendantShift(), this.#settings, aspectsList))
 
     return this
   }
@@ -373,7 +373,12 @@ class RadixChart extends Chart {
       // pointer
       //if (positions[point.getName()] != pointData.position) {
       const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerX, this.getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.getAscendantShift()))
-      const pointerLine = SVGUtils.SVGLine(pointPosition.x, pointPosition.y, (pointPosition.x + pointerLineEndPosition.x) / 2, (pointPosition.y + pointerLineEndPosition.y) / 2)
+
+      // Calculate intersection on bounding box of the symbol to prevent line crossing or undershooting
+      const adjustedDest = Utils.getAdjustedPointerLineDestination(pointPosition, pointerLineEndPosition, this.#settings.RADIX_POINTS_FONT_SIZE);
+
+      const pointerLine = SVGUtils.SVGLine(pointPosition.x, pointPosition.y, adjustedDest.x, adjustedDest.y);
+
       pointerLine.setAttribute("stroke", this.#settings.CHART_LINE_COLOR);
       pointerLine.setAttribute("stroke-width", this.#settings.CHART_STROKE / 2);
       wrapper.appendChild(pointerLine);
@@ -418,7 +423,7 @@ class RadixChart extends Chart {
       const textAngle = startCusp + gap / 2
 
       const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.getAscendantShift()))
-      const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i+1}`)
+      const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`)
       text.setAttribute("text-anchor", "middle") // start, middle, end
       text.setAttribute("dominant-baseline", "middle")
       text.setAttribute("font-size", this.#settings.RADIX_POINTS_FONT_SIZE / 2)
@@ -438,21 +443,21 @@ class RadixChart extends Chart {
     const cusps = data.cusps
 
     const axisList = [{
-        name: SVGUtils.SYMBOL_AS,
-        angle: cusps[0].angle
-      },
-      {
-        name: SVGUtils.SYMBOL_IC,
-        angle: cusps[3].angle
-      },
-      {
-        name: SVGUtils.SYMBOL_DS,
-        angle: cusps[6].angle
-      },
-      {
-        name: SVGUtils.SYMBOL_MC,
-        angle: cusps[9].angle
-      },
+      name: SVGUtils.SYMBOL_AS,
+      angle: cusps[0].angle
+    },
+    {
+      name: SVGUtils.SYMBOL_IC,
+      angle: cusps[3].angle
+    },
+    {
+      name: SVGUtils.SYMBOL_DS,
+      angle: cusps[6].angle
+    },
+    {
+      name: SVGUtils.SYMBOL_MC,
+      angle: cusps[9].angle
+    },
     ]
 
     const wrapper = SVGUtils.SVGGroup()
@@ -535,5 +540,5 @@ class RadixChart extends Chart {
 
 export {
   RadixChart as
-  default
+    default
 }

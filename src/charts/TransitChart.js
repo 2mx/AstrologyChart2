@@ -80,10 +80,10 @@ class TransitChart extends Chart {
    * Get data
    * @return {Object}
    */
-  getData(){
+  getData() {
     return {
-      "points":[...this.#data.points],
-      "cusps":[...this.#data.cusps]
+      "points": [...this.#data.points],
+      "cusps": [...this.#data.cusps]
     }
   }
 
@@ -105,13 +105,13 @@ class TransitChart extends Chart {
    *
    * @return {Array<Object>}
    */
-  getAspects(fromPoints, toPoints, aspects){
-    if(!this.#data){
+  getAspects(fromPoints, toPoints, aspects) {
+    if (!this.#data) {
       return
     }
 
     fromPoints = fromPoints ?? this.#data.points
-    toPoints = toPoints ?? [...this.#radix.getData().points, {name:"AS", angle:0}, {name:"IC", angle:this.#radix.getData().cusps.at(3)}, {name:"DS", angle:180}, {name:"MC", angle:this.#radix.getData().cusps.at(9)}]
+    toPoints = toPoints ?? [...this.#radix.getData().points, { name: "AS", angle: 0 }, { name: "IC", angle: this.#radix.getData().cusps.at(3) }, { name: "DS", angle: 180 }, { name: "MC", angle: this.#radix.getData().cusps.at(9) }]
     aspects = aspects ?? DefaultSettings.DEFAULT_ASPECTS
 
     return AspectUtils.getAspects(fromPoints, toPoints, aspects)
@@ -126,14 +126,14 @@ class TransitChart extends Chart {
    *
    * @return {Array<Object>}
    */
-  drawAspects( fromPoints, toPoints, aspects ){
+  drawAspects(fromPoints, toPoints, aspects) {
     const aspectsWrapper = this.#radix.getUniverse().getAspectsElement()
     Utils.cleanUp(aspectsWrapper.getAttribute("id"), this.#beforeCleanUpHook)
 
     const aspectsList = this.getAspects(fromPoints, toPoints, aspects)
-      .filter( aspect =>  aspect.aspect.name != 'Conjunction')
-    
-    aspectsWrapper.appendChild( AspectUtils.drawAspects(this.#radix.getCenterCircleRadius(), this.#radix.getAscendantShift(), this.#settings, aspectsList))
+      .filter(aspect => aspect.aspect.name != 'Conjunction')
+
+    aspectsWrapper.appendChild(AspectUtils.drawAspects(this.#radix.getCenterCircleRadius(), this.#radix.getAscendantShift(), this.#settings, aspectsList))
 
     return this
   }
@@ -218,7 +218,11 @@ class TransitChart extends Chart {
       // pointer
       //if (positions[point.getName()] != pointData.position) {
       const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerX, this.#getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.#radix.getAscendantShift()))
-      const pointerLine = SVGUtils.SVGLine(pointPosition.x, pointPosition.y, (pointPosition.x + pointerLineEndPosition.x) / 2, (pointPosition.y + pointerLineEndPosition.y) / 2)
+
+      const adjustedDest = Utils.getAdjustedPointerLineDestination(pointPosition, pointerLineEndPosition, this.#settings.TRANSIT_POINTS_FONT_SIZE);
+
+      const pointerLine = SVGUtils.SVGLine(pointPosition.x, pointPosition.y, adjustedDest.x, adjustedDest.y);
+
       pointerLine.setAttribute("stroke", this.#settings.CHART_LINE_COLOR);
       pointerLine.setAttribute("stroke-width", this.#settings.CHART_STROKE / 2);
       wrapper.appendChild(pointerLine);
@@ -260,7 +264,7 @@ class TransitChart extends Chart {
       const textAngle = startCusp + gap / 2
 
       const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.#radix.getAscendantShift()))
-      const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i+1}`)
+      const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`)
       text.setAttribute("text-anchor", "middle") // start, middle, end
       text.setAttribute("dominant-baseline", "middle")
       text.setAttribute("font-size", this.#settings.RADIX_POINTS_FONT_SIZE / 2)
@@ -298,5 +302,5 @@ class TransitChart extends Chart {
 
 export {
   TransitChart as
-  default
+    default
 }
