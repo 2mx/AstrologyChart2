@@ -21,3 +21,12 @@ export const POINT_PROPERTIES_FONT_SIZE = 16
 * @default 2
 */
 export const POINT_COLLISION_RADIUS = 12
+
+/**
+ * Retrograde symbol
+ * @constant
+ * @type {String}
+ * @property choices M for Px symbol or N for R symbol
+ * @default "M"
+ */
+export const POINT_RETROGRADE_SYMBOL = "M"
