@@ -108,6 +108,14 @@ export const POINT_PROPERTIES_RETROGRADE_OFFSET = 5
 */
 export const POINT_PROPERTIES_DIGNITY_OFFSET = 6
 
+/*
+* Point retrograde symbol code
+* @constant
+* @type {String}
+* @default M
+*/
+export const POINT_RETROGRADE_SYMBOL_CODE = "M"
+
 /**
  * A point collision radius
  * @constant

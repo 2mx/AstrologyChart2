@@ -87,66 +87,95 @@ class Utils {
     }
 
     /**
-     * Calculates new position of points on circle without overlapping each other
+     * Calculates new position of points on circle without overlapping each other.
+     * Iterative version to avoid "Stack Overflow" and improve distribution.
      *
-     * @throws {Error} - If there is no place on the circle to place points.
      * @param {Array} points - [{name:"a", angle:10}, {name:"b", angle:20}]
      * @param {Number} collisionRadius - point radius
-     * @param {Number} radius - circle radius
-     *
+     * @param {Number} circleRadius - circle radius
      * @return {Object} - {"Moon":30, "Sun":60, "Mercury":86, ...}
      */
     static calculatePositionWithoutOverlapping(points, collisionRadius, circleRadius) {
-        const STEP = 1 //degree
+        if (!points || points.length === 0) return {};
 
-        const cellWidth = 10 //degree
-        const numberOfCells = Utils.DEG_360 / cellWidth
-        const frequency = new Array(numberOfCells).fill(0)
+        const MAX_ITERATIONS = 300;
+        const DAMPING = 0.8;
+        // Convert physical symbol radius to minimum angular gap
+        const MIN_ANGLE = (2 * collisionRadius / circleRadius) * (180 / Math.PI);
+
+        // 1. Find an empty starting point to "open" the circle and handle the 360/0 transition
+        const cellWidth = 10;
+        const numberOfCells = Utils.DEG_360 / cellWidth;
+        const frequency = new Array(numberOfCells).fill(0);
         for (const point of points) {
-            const index = Math.floor(point.angle / cellWidth)
-            frequency[index] += 1
+            const index = Math.floor(point.angle / cellWidth);
+            frequency[index] += 1;
         }
+        const emptyCellIndex = frequency.findIndex(count => count === 0);
+        const START_ANGLE = emptyCellIndex === -1 ? 0 : cellWidth * emptyCellIndex;
 
-        // In this algorithm the order of points is crucial.
-        // At that point in the circle, where the period changes in the circle (for instance:[358,359,0,1]), the points are arranged in incorrect order.
-        // As a starting point, I try to find a place where there are no points. This place I use as START_ANGLE.
-        const START_ANGLE = cellWidth * frequency.findIndex(count => count === 0)
+        // 2. Data preparation and priority hierarchy
+        const fastPlanets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars'];
 
-        const _points = points.map(point => {
+        let data = points.map(p => {
+            let angle = p.angle;
+            // Normalize relative to the empty starting point to treat the circle linearly
+            if (angle < START_ANGLE) angle += Utils.DEG_360;
+
             return {
-                name: point.name,
-                angle: point.angle < START_ANGLE ? point.angle + Utils.DEG_360 : point.angle
-            }
-        })
+                name: p.name,
+                originalAngle: angle,
+                currentAngle: angle,
+                weight: fastPlanets.includes(p.name) ? 2.0 : 1.0,
+                velocity: 0
+            };
+        });
 
-        _points.sort((a, b) => {
-            return a.angle - b.angle
-        })
+        // Sort linearly
+        data.sort((a, b) => a.currentAngle - b.currentAngle);
 
-        // Recursive function
-        const arrangePoints = () => {
-            for (let i = 0, ln = _points.length; i < ln; i++) {
-                const pointPosition = Utils.positionOnCircle(0, 0, circleRadius, Utils.degreeToRadian(_points[i].angle))
-                _points[i].x = pointPosition.x
-                _points[i].y = pointPosition.y
+        // 3. Iterative solver (Force-directed logic)
+        for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
+            let maxShift = 0;
 
-                for (let j = 0; j < i; j++) {
-                    const distance = Math.sqrt(Math.pow(_points[i].x - _points[j].x, 2) + Math.pow(_points[i].y - _points[j].y, 2));
-                    if (distance < (2 * collisionRadius)) {
-                        _points[i].angle += STEP
-                        _points[j].angle -= STEP
-                        arrangePoints() //======> Recursive call
+            for (let i = 0; i < data.length; i++) {
+                let force = 0;
+
+                // Collision force with neighbors
+                if (i > 0) {
+                    let diff = data[i].currentAngle - data[i - 1].currentAngle;
+                    if (diff < MIN_ANGLE) {
+                        force += (MIN_ANGLE - diff) * 0.5;
                     }
                 }
+                if (i < data.length - 1) {
+                    let diff = data[i + 1].currentAngle - data[i].currentAngle;
+                    if (diff < MIN_ANGLE) {
+                        force -= (MIN_ANGLE - diff) * 0.5;
+                    }
+                }
+
+                // Return force to original position (Hooke's Law)
+                let springForce = (data[i].originalAngle - data[i].currentAngle) * 0.1 * data[i].weight;
+                force += springForce;
+
+                data[i].velocity = (data[i].velocity + force) * DAMPING;
+                data[i].currentAngle += data[i].velocity;
+
+                maxShift = Math.max(maxShift, Math.abs(data[i].velocity));
             }
+
+            // Early exit if the system is stable
+            if (maxShift < 0.01) break;
         }
 
-        arrangePoints()
-
-        return _points.reduce((accumulator, point, currentIndex) => {
-            accumulator[point.name] = point.angle
-            return accumulator
-        }, {})
+        // 4. Return results normalized back to 0-360
+        return data.reduce((accumulator, point) => {
+            let finalAngle = point.currentAngle;
+            if (finalAngle >= Utils.DEG_360) finalAngle -= Utils.DEG_360;
+            accumulator[point.name] = finalAngle;
+            return accumulator;
+        }, {});
     }
 
     /**

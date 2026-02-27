@@ -215,7 +215,7 @@ class Point {
         function retrograde() {
             const retrogradePosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
 
-            const retrogradeText = SVGUtils.SVGText(retrogradePosition.x, retrogradePosition.y, SVGUtils.SYMBOL_RETROGRADE_CODE)
+            const retrogradeText = SVGUtils.SVGText(retrogradePosition.x, retrogradePosition.y, this.#settings.POINT_RETROGRADE_SYMBOL_CODE || SVGUtils.SYMBOL_RETROGRADE_CODE)
             retrogradeText.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
             retrogradeText.setAttribute("text-anchor", "middle") // start, middle, end
             retrogradeText.setAttribute("dominant-baseline", "middle")

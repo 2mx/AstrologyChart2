@@ -165,6 +165,7 @@ class SVGUtils {
         svg.setAttribute('xmlns', SVGUtils.SVG_NAMESPACE);
         svg.setAttribute('version', "1.1");
         svg.setAttribute('viewBox', "0 0 " + width + " " + height);
+        svg.setAttribute('data-chart', "astrology-chart");
         return svg
     }
 
@@ -307,150 +308,200 @@ class SVGUtils {
      * @return {SVGElement}
      */
     static SVGSymbol(name, xPos, yPos,) {
+        let element;
         switch (name) {
             case SVGUtils.SYMBOL_AS:
-                return asSymbol(xPos, yPos)
+                element = asSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_DS:
-                return dsSymbol(xPos, yPos)
+                element = dsSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_MC:
-                return mcSymbol(xPos, yPos)
+                element = mcSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_IC:
-                return icSymbol(xPos, yPos)
+                element = icSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_ARIES:
-                return ariesSymbol(xPos, yPos)
+                element = ariesSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_TAURUS:
-                return taurusSymbol(xPos, yPos)
+                element = taurusSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_GEMINI:
-                return geminiSymbol(xPos, yPos)
+                element = geminiSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_CANCER:
-                return cancerSymbol(xPos, yPos)
+                element = cancerSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_LEO:
-                return leoSymbol(xPos, yPos)
+                element = leoSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_VIRGO:
-                return virgoSymbol(xPos, yPos)
+                element = virgoSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_LIBRA:
-                return libraSymbol(xPos, yPos)
+                element = libraSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SCORPIO:
-                return scorpioSymbol(xPos, yPos)
+                element = scorpioSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SAGITTARIUS:
-                return sagittariusSymbol(xPos, yPos)
+                element = sagittariusSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_CAPRICORN:
-                return capricornSymbol(xPos, yPos)
+                element = capricornSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_AQUARIUS:
-                return aquariusSymbol(xPos, yPos)
+                element = aquariusSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_PISCES:
-                return piscesSymbol(xPos, yPos)
+                element = piscesSymbol(xPos, yPos);
+                break;
 
 
             case SVGUtils.SYMBOL_SUN:
-                return sunSymbol(xPos, yPos)
+                element = sunSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_MOON:
-                return moonSymbol(xPos, yPos)
+                element = moonSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_MERCURY:
-                return mercurySymbol(xPos, yPos)
+                element = mercurySymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_VENUS:
-                return venusSymbol(xPos, yPos)
+                element = venusSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_EARTH:
-                return earthSymbol(xPos, yPos)
+                element = earthSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_MARS:
-                return marsSymbol(xPos, yPos)
+                element = marsSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_JUPITER:
-                return jupiterSymbol(xPos, yPos)
+                element = jupiterSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SATURN:
-                return saturnSymbol(xPos, yPos)
+                element = saturnSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_URANUS:
-                return uranusSymbol(xPos, yPos)
+                element = uranusSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_NEPTUNE:
-                return neptuneSymbol(xPos, yPos)
+                element = neptuneSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_PLUTO:
-                return plutoSymbol(xPos, yPos)
+                element = plutoSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_CHIRON:
-                return chironSymbol(xPos, yPos)
+                element = chironSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_LILITH:
-                return lilithSymbol(xPos, yPos)
+                element = lilithSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_NNODE:
-                return nnodeSymbol(xPos, yPos)
+                element = nnodeSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SNODE:
-                return snodeSymbol(xPos, yPos)
+                element = snodeSymbol(xPos, yPos);
+                break;
 
 
             case SVGUtils.SYMBOL_RETROGRADE:
-                return retrogradeSymbol(xPos, yPos)
+                element = retrogradeSymbol(xPos, yPos);
+                break;
 
 
             case SVGUtils.SYMBOL_CONJUNCTION:
-                return conjunctionSymbol(xPos, yPos)
+                element = conjunctionSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_OPPOSITION:
-                return oppositionSymbol(xPos, yPos)
+                element = oppositionSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SQUARE:
-                return squareSymbol(xPos, yPos)
+                element = squareSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_TRINE:
-                return trineSymbol(xPos, yPos)
+                element = trineSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SEXTILE:
-                return sextileSymbol(xPos, yPos)
+                element = sextileSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_QUINCUNX:
-                return quincunxSymbol(xPos, yPos)
+                element = quincunxSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SEMISEXTILE:
-                return semisextileSymbol(xPos, yPos)
+                element = semisextileSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SEMISQUARE:
             case SVGUtils.SYMBOL_OCTILE:
-                return semisquareSymbol(xPos, yPos)
+                element = semisquareSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_TRIOCTILE:
             case SVGUtils.SYMBOL_SESQUISQUARE:
-                return trioctileSymbol(xPos, yPos)
+                element = trioctileSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_QUINTILE:
-                return quintileSymbol(xPos, yPos)
+                element = quintileSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_BIQUINTILE:
-                return biquintileSymbol(xPos, yPos)
+                element = biquintileSymbol(xPos, yPos);
+                break;
 
             case SVGUtils.SYMBOL_SEMIQUINTILE:
-                return semiquintileSymbol(xPos, yPos)
+                element = semiquintileSymbol(xPos, yPos);
+                break;
 
             default:
                 console.debug('Unknown symbol: ' + name)
-                const unknownSymbol = SVGUtils.SVGCircle(xPos, yPos, 8)
-                unknownSymbol.setAttribute("stroke", "#333")
-                return unknownSymbol
+                element = SVGUtils.SVGCircle(xPos, yPos, 8)
+                element.setAttribute("stroke", "#333")
         }
+
+        if (element) {
+            element.setAttribute('data-symbol', name);
+        }
+
+        return element;
 
         /*
          * Ascendant symbol

@@ -239,14 +239,19 @@ class TransitChart extends Chart {
              * Line from the ruler to the celestial body
              * @type {{x, y}}
              */
-            const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerX, this.#getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.#radix.getAscendantShift()))
+            const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.#radix.getAscendantShift()))
 
-            let pointerLine;
-            if (this.#settings.DRAW_RULER_MARK) {
-                pointerLine = SVGUtils.SVGLine(pointPosition.x, pointPosition.y, (pointPosition.x + pointerLineEndPosition.x) / 2, (pointPosition.y + pointerLineEndPosition.y) / 2)
-            } else {
-                pointerLine = SVGUtils.SVGLine(rulerLineEndPosition.x, rulerLineEndPosition.y, (pointPosition.x + pointerLineEndPosition.x) / 2, (pointPosition.y + pointerLineEndPosition.y) / 2)
-            }
+            // Draw pointer line with a gap to avoid crossing the symbol
+            const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
+
+            // First half of the line
+            const midPoint = {
+                x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
+                y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
+            };
+
+            const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
+
             if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
                 pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
             } else {
