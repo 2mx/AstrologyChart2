@@ -1,5 +1,5 @@
 import Point from '../src/points/Point.js'
-import * as defaultSettings from '../src/settings/DefaultSettings.js';
+import defaultSettings from '../src/settings/DefaultSettings.js';
 
 test('Point.getAngleInSign', () => {
   const cusps = [{angle:0},{angle:30},{angle:60},{angle:90},{angle:120},{angle:150},{angle:180},{angle:210},{angle:240},{angle:270},{angle:300},{angle:330}]

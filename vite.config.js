@@ -1,37 +1,43 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import path from 'path';
+import banner from 'vite-plugin-banner';
+import pkg from './package.json';
 
 export default defineConfig({
-    mode: 'development', // Vite automatically uses 'development' mode for dev server
-    define: {
-        // You can define environment variables here if needed (e.g., using process.env.VARIABLE)
-        'process.env': {}
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.js'),
+      name: 'astrology',
+      fileName: (format) => format === 'umd' ? 'astrochart2.min.js' : `astrochart2.${format}.js`,
+      formats: ['umd'],
     },
-    build: {
-        // Output settings
-        lib: {
-            entry: path.resolve(__dirname, 'src/index.js'),
-            name: 'astrology',
-            fileName: 'astrochart2', // This will output astrochart2.js
-            formats: ['umd'], // UMD format
+    sourcemap: true,
+    minify: 'terser', // Use terser for minification
+    terserOptions: {
+      format: {
+        comments: false, // Ensure banner isn't stripped but other comments are
+      },
+    },
+    rollupOptions: {
+      output: {
+        globals: {
+          // Add external dependencies here if any
         },
-        sourcemap: true, // Enables source maps (like 'inline-source-map' in Webpack)
+      },
     },
-    plugins: [],
-    css: {
-        // CSS handling is built-in in Vite, but we can configure here
-        preprocessorOptions: {
-            // If you need SCSS or other preprocessors
-        },
+  },
+  plugins: [
+    banner(`
+      ${pkg.name}
+      ${pkg.description}
+      Version: ${pkg.version}
+      Author: ${pkg.author.name} (${pkg.author.email})
+      Licence: GNUv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
+    `),
+  ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
     },
-    server: {
-        // Vite automatically starts in development mode with hot-reloading (HMR)
-        port: 3000, // Optional: specify a port for the dev server
-    },
-    resolve: {
-        alias: {
-            // Optional: define aliases for paths
-            '@': path.resolve(__dirname, 'src')
-        }
-    },
+  },
 });
