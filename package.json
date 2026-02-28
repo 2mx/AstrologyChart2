@@ -30,6 +30,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "watch": "vite build --watch --mode development",
     "build": "vite build",
     "test": "jest",
     "doc": "jsdoc -c jsdoc.json"
