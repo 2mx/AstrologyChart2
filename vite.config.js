@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
         formats: ['umd'],
       },
       sourcemap: true,
+      emptyOutDir: false,
       // Désactive la minification en mode dev pour faciliter le débogage dans l'autre projet
       minify: isDev ? false : 'terser',
       terserOptions: {
