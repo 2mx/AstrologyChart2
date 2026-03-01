@@ -87,23 +87,25 @@ class Utils {
     }
 
     /**
-     * Calculates new position of points on circle without overlapping each other.
-     * Iterative version to avoid "Stack Overflow" and improve distribution.
-     *
-     * @param {Array} points - [{name:"a", angle:10}, {name:"b", angle:20}]
-     * @param {Number} collisionRadius - point radius
-     * @param {Number} circleRadius - circle radius
-     * @return {Object} - {"Moon":30, "Sun":60, "Mercury":86, ...}
-     */
+ * Calculates new position of points on circle without overlapping each other.
+ * Corrigé : Suppression de la récursion pour éviter le crash "Stack Overflow".
+ * Utilise une projection de contrainte dure (hard constraint) pour garantir MIN_ANGLE.
+ *
+ * @param {Array} points - [{name:"a", angle:10}, {name:"b", angle:20}]
+ * @param {Number} collisionRadius - point radius (s.r)
+ * @param {Number} circleRadius - circle radius (Circle.r)
+ * @return {Object} - {"Moon":30, "Sun":60, "Mercury":86,...}
+ */
     static calculatePositionWithoutOverlapping(points, collisionRadius, circleRadius) {
         if (!points || points.length === 0) return {};
 
         const MAX_ITERATIONS = 300;
-        const DAMPING = 0.8;
-        // Convert physical symbol radius to minimum angular gap
+        const RECALL_STRENGTH = 0.05;
+        const CONSTRAINT_PASSES = 5; // Nombre de passes de contrainte par itération
+        // Conversion du rayon physique du symbole en écart angulaire minimum
         const MIN_ANGLE = (2 * collisionRadius / circleRadius) * (180 / Math.PI);
 
-        // 1. Find an empty starting point to "open" the circle and handle the 360/0 transition
+        // 1. Trouver un point de départ vide pour "ouvrir" le cercle et gérer le passage 360/0
         const cellWidth = 10;
         const numberOfCells = Utils.DEG_360 / cellWidth;
         const frequency = new Array(numberOfCells).fill(0);
@@ -114,69 +116,111 @@ class Utils {
         const emptyCellIndex = frequency.findIndex(count => count === 0);
         const START_ANGLE = emptyCellIndex === -1 ? 0 : cellWidth * emptyCellIndex;
 
-        // 2. Data preparation and priority hierarchy
+        // 2. Préparation des données et hiérarchie de priorité (Poids)
+        // On privilégie les planètes rapides qui doivent rester proches de leur longitude réelle
         const fastPlanets = ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars'];
 
         let data = points.map(p => {
             let angle = p.angle;
-            // Normalize relative to the empty starting point to treat the circle linearly
+            // Normalisation par rapport au point de départ vide pour traiter le cercle linéairement
             if (angle < START_ANGLE) angle += Utils.DEG_360;
 
             return {
                 name: p.name,
                 originalAngle: angle,
                 currentAngle: angle,
+                // Poids : les planètes rapides ont une force de rappel 2x plus forte
                 weight: fastPlanets.includes(p.name) ? 2.0 : 1.0,
-                velocity: 0
             };
         });
 
-        // Sort linearly
-        data.sort((a, b) => a.currentAngle - b.currentAngle);
+        // Tri initial et DÉFINITIF par angle original pour éviter le croisement des traits de rappel
+        data.sort((a, b) => a.originalAngle - b.originalAngle);
 
-        // 3. Iterative solver (Force-directed logic)
+        // 3. Boucle de résolution : Recall + Projection de contrainte dure
         for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
-            let maxShift = 0;
+            let maxMovement = 0;
 
+            // A) Force d'attraction vers la longitude astronomique originale (Recall force)
             for (let i = 0; i < data.length; i++) {
-                let force = 0;
-
-                // Collision force with neighbors
-                if (i > 0) {
-                    let diff = data[i].currentAngle - data[i - 1].currentAngle;
-                    if (diff < MIN_ANGLE) {
-                        force += (MIN_ANGLE - diff) * 0.5;
-                    }
-                }
-                if (i < data.length - 1) {
-                    let diff = data[i + 1].currentAngle - data[i].currentAngle;
-                    if (diff < MIN_ANGLE) {
-                        force -= (MIN_ANGLE - diff) * 0.5;
-                    }
-                }
-
-                // Return force to original position (Hooke's Law)
-                let springForce = (data[i].originalAngle - data[i].currentAngle) * 0.1 * data[i].weight;
-                force += springForce;
-
-                data[i].velocity = (data[i].velocity + force) * DAMPING;
-                data[i].currentAngle += data[i].velocity;
-
-                maxShift = Math.max(maxShift, Math.abs(data[i].velocity));
+                const s = data[i];
+                const recall = s.originalAngle - s.currentAngle;
+                const movement = recall * RECALL_STRENGTH * s.weight;
+                s.currentAngle += movement;
+                maxMovement = Math.max(maxMovement, Math.abs(movement));
             }
 
-            // Early exit if the system is stable
-            if (maxShift < 0.01) break;
+            // B) Projection de contrainte dure : on force MIN_ANGLE entre voisins
+            //    Plusieurs passes pour propager la contrainte dans les stelliums
+            for (let pass = 0; pass < CONSTRAINT_PASSES; pass++) {
+                // Passe avant (gauche → droite)
+                for (let i = 0; i < data.length - 1; i++) {
+                    const s1 = data[i];
+                    const s2 = data[i + 1];
+                    const diff = s2.currentAngle - s1.currentAngle;
+
+                    if (diff < MIN_ANGLE) {
+                        const overlap = MIN_ANGLE - diff;
+                        const totalWeight = s1.weight + s2.weight;
+
+                        // Répartition inversement proportionnelle au poids
+                        s1.currentAngle -= overlap * (s2.weight / totalWeight);
+                        s2.currentAngle += overlap * (s1.weight / totalWeight);
+
+                        maxMovement = Math.max(maxMovement, overlap);
+                    }
+                }
+
+                // Passe arrière (droite → gauche) pour propager uniformément
+                for (let i = data.length - 2; i >= 0; i--) {
+                    const s1 = data[i];
+                    const s2 = data[i + 1];
+                    const diff = s2.currentAngle - s1.currentAngle;
+
+                    if (diff < MIN_ANGLE) {
+                        const overlap = MIN_ANGLE - diff;
+                        const totalWeight = s1.weight + s2.weight;
+
+                        s1.currentAngle -= overlap * (s2.weight / totalWeight);
+                        s2.currentAngle += overlap * (s1.weight / totalWeight);
+
+                        maxMovement = Math.max(maxMovement, overlap);
+                    }
+                }
+
+                // Wrap-around (entre le dernier et le premier)
+                if (data.length > 1) {
+                    const first = data[0];
+                    const last = data[data.length - 1];
+                    const diff = (first.currentAngle + Utils.DEG_360) - last.currentAngle;
+
+                    if (diff < MIN_ANGLE) {
+                        const overlap = MIN_ANGLE - diff;
+                        const totalWeight = first.weight + last.weight;
+
+                        last.currentAngle -= overlap * (first.weight / totalWeight);
+                        first.currentAngle += overlap * (last.weight / totalWeight);
+
+                        maxMovement = Math.max(maxMovement, overlap);
+                    }
+                }
+            }
+
+            // Si le système est stable (recall et contraintes satisfaits)
+            if (maxMovement < 0.01) break;
         }
 
-        // 4. Return results normalized back to 0-360
-        return data.reduce((accumulator, point) => {
-            let finalAngle = point.currentAngle;
-            if (finalAngle >= Utils.DEG_360) finalAngle -= Utils.DEG_360;
-            accumulator[point.name] = finalAngle;
+        // 4. Denormalisation et formatage du résultat
+        return data.reduce((accumulator, p) => {
+            // Remise de l'angle dans l'intervalle [0, 360[
+            let finalAngle = p.currentAngle % Utils.DEG_360;
+            if (finalAngle < 0) finalAngle += Utils.DEG_360;
+
+            accumulator[p.name] = finalAngle;
             return accumulator;
         }, {});
     }
+
 
     /**
      * Check if the angle collides with the points
@@ -212,7 +256,7 @@ class Utils {
      */
     static cleanUp(elementID, beforeHook) {
         let elm = document.getElementById(elementID)
-        if (! elm) {
+        if (!elm) {
             return
         }
 
