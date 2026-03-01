@@ -429,14 +429,8 @@ class RadixChart extends Chart {
             // Draw pointer line with a gap to avoid crossing the symbol
             const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
 
-            // First half of the line
-            const midPoint = {
-                x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
-                y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
-            };
-
-            // Second half of the line
-            const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
+            const adjustedDest = Utils.getAdjustedPointerLineDestination(pointerLineStart, pointerLineEndPosition, this.#settings.RADIX_POINTS_FONT_SIZE);
+            const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, adjustedDest.x, adjustedDest.y);
 
             if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
                 pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
