@@ -170,7 +170,6 @@ class TransitChart extends Chart {
         // radix reDraw
         Utils.cleanUp(this.#root.getAttribute('id'), this.#beforeCleanUpHook)
         this.#radix.setNumberOfLevels(this.#numberOfLevels)
-        this.#drawCusps(data)
         this.#drawPoints(data)
         this.#drawRuler()
         this.#drawBorders()
@@ -274,75 +273,6 @@ class TransitChart extends Chart {
             pointGroup.appendChild(symbol);
 
             wrapper.appendChild(pointGroup);
-        }
-
-        this.#root.appendChild(wrapper)
-    }
-
-    /*
-     * Draw points
-     * @param {Object} data - chart data
-     */
-    #drawCusps(data) {
-        const points = data.points
-        const cusps = data.cusps
-
-        const mainAxisIndexes = [0, 3, 6, 9] //As, Ic, Ds, Mc
-
-        const pointsPositions = points.map(point => {
-            return point.angle
-        })
-
-        const wrapper = SVGUtils.SVGGroup()
-        wrapper.classList.add('c-transit-cusps')
-
-        const textRadius = this.#getCenterCircleRadius() + ((this.#getRullerCircleRadius() - this.#getCenterCircleRadius()) / 6)
-
-        for (let i = 0; i < cusps.length; i++) {
-
-            const isLineInCollisionWithPoint = ! this.#settings.CHART_ALLOW_HOUSE_OVERLAP && Utils.isCollision(cusps[i].angle, pointsPositions, this.#settings.POINT_COLLISION_RADIUS / 2)
-
-            const startPos = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getCenterCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.#radix.getAscendantShift()))
-            const endPos = Utils.positionOnCircle(this.#centerX, this.#centerY, isLineInCollisionWithPoint ? this.#getCenterCircleRadius() + ((this.#getRullerCircleRadius() - this.#getCenterCircleRadius()) / 6) : this.#getRullerCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.#radix.getAscendantShift()))
-
-            const line = SVGUtils.SVGLine(startPos.x, startPos.y, endPos.x, endPos.y)
-            line.setAttribute("stroke", mainAxisIndexes.includes(i) ? this.#settings.CHART_MAIN_AXIS_COLOR : this.#settings.CHART_LINE_COLOR)
-            line.setAttribute("stroke-width", mainAxisIndexes.includes(i) ? this.#settings.CHART_MAIN_STROKE : this.#settings.CHART_STROKE)
-            wrapper.appendChild(line);
-
-            const startCusp = cusps[i].angle
-            const endCusp = cusps[(i + 1) % 12].angle
-            const gap = endCusp - startCusp > 0 ? endCusp - startCusp : endCusp - startCusp + Utils.DEG_360
-            const textAngle = startCusp + gap / 2
-
-            const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.#radix.getAscendantShift()))
-            const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`)
-            text.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY)
-            text.setAttribute("text-anchor", "middle") // start, middle, end
-            text.setAttribute("dominant-baseline", "middle")
-            text.setAttribute("font-size", this.#settings.RADIX_HOUSE_FONT_SIZE)
-            text.setAttribute("fill", this.#settings.CHART_HOUSE_NUMBER_COLOR)
-            text.classList.add('c-radix-cusps__house-number')
-
-            if (this.#settings.INSERT_ELEMENT_TITLE) {
-                text.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.cusps[i + 1]))
-            }
-
-            wrapper.appendChild(text)
-
-            if (this.#settings.DRAW_HOUSE_DEGREE) {
-                if (Array.isArray(this.#settings.HOUSE_DEGREE_FILTER) && ! this.#settings.HOUSE_DEGREE_FILTER.includes(i + 1)) {
-                    continue;
-                }
-                const degreePos = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius() - (this.getRadius() - this.#getRullerCircleRadius()), Utils.degreeToRadian(startCusp - 1.75, this.#radix.getAscendantShift()))
-                const degree = SVGUtils.SVGText(degreePos.x, degreePos.y, Math.floor(cusps[i].angle % 30) + "º")
-                degree.setAttribute("font-family", "Arial")
-                degree.setAttribute("text-anchor", "middle") // start, middle, end
-                degree.setAttribute("dominant-baseline", "middle")
-                degree.setAttribute("font-size", this.#settings.HOUSE_DEGREE_SIZE || this.#settings.POINT_PROPERTIES_ANGLE_SIZE / 2)
-                degree.setAttribute("fill", this.#settings.HOUSE_DEGREE_COLOR || this.#settings.TRANSIT_HOUSE_NUMBER_COLOR || this.#settings.CHART_HOUSE_NUMBER_COLOR)
-                wrapper.appendChild(degree)
-            }
         }
 
         this.#root.appendChild(wrapper)
