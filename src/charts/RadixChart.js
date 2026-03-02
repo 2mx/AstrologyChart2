@@ -557,8 +557,8 @@ class RadixChart extends Chart {
         const wrapper = SVGUtils.SVGGroup()
         wrapper.classList.add('c-radix-axis')
 
-        const rad1 = this.#numberOfLevels === 24 ? this.getRadius() : this.getInnerCircleRadius();
-        const rad2 = this.#numberOfLevels === 24 ? this.getRadius() + AXIS_LENGTH : this.getInnerCircleRadius() + AXIS_LENGTH / 2;
+        const rad1 = this.getRadius();
+        const rad2 = this.getRadius() + AXIS_LENGTH;
 
         for (const axis of axisList) {
             const axisGroup = SVGUtils.SVGGroup()

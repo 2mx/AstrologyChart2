@@ -174,7 +174,6 @@ class TransitChart extends Chart {
         this.#drawPoints(data)
         this.#drawRuler()
         this.#drawBorders()
-        this.#settings.CHART_DRAW_MAIN_AXIS && this.#drawMainAxisDescription(data)
         this.#settings.DRAW_ASPECTS && this.drawAspects()
     }
 
@@ -344,104 +343,6 @@ class TransitChart extends Chart {
                 degree.setAttribute("fill", this.#settings.HOUSE_DEGREE_COLOR || this.#settings.TRANSIT_HOUSE_NUMBER_COLOR || this.#settings.CHART_HOUSE_NUMBER_COLOR)
                 wrapper.appendChild(degree)
             }
-        }
-
-        this.#root.appendChild(wrapper)
-    }
-
-    /*
-     * Draw main axis descrition
-     * @param {Array} axisList
-     */
-    #drawMainAxisDescription(data) {
-        const AXIS_LENGTH = 10
-        const cusps = data.cusps
-
-        const axisList = [{
-            name: SVGUtils.SYMBOL_AS, angle: cusps[0].angle
-        }, {
-            name: SVGUtils.SYMBOL_IC, angle: cusps[3].angle
-        }, {
-            name: SVGUtils.SYMBOL_DS, angle: cusps[6].angle
-        }, {
-            name: SVGUtils.SYMBOL_MC, angle: cusps[9].angle
-        },]
-
-        const wrapper = SVGUtils.SVGGroup()
-        wrapper.classList.add('c-transit-axis')
-
-        const rad1 = this.getRadius();
-        const rad2 = this.getRadius() + AXIS_LENGTH;
-
-        for (const axis of axisList) {
-            const axisGroup = SVGUtils.SVGGroup()
-            axisGroup.classList.add('c-transit-axis__axis')
-            axisGroup.classList.add('c-transit-axis__axis--' + axis.name.toLowerCase())
-
-            let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad1, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()))
-            let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()))
-            let line = SVGUtils.SVGLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-            line.setAttribute("stroke", this.#settings.CHART_MAIN_AXIS_COLOR);
-            line.setAttribute("stroke-width", this.#settings.CHART_MAIN_STROKE);
-            axisGroup.appendChild(line);
-
-            let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2 + AXIS_LENGTH, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()))
-            let symbol;
-            let SHIFT_X = 0;
-            let SHIFT_Y = 0;
-            const STEP = 0; // Décalage disabled
-
-            switch (axis.name) {
-                case "As":
-                    SHIFT_X -= STEP
-                    SHIFT_Y -= STEP
-                    SVGUtils.SYMBOL_AS_CODE = this.#settings.SYMBOL_AS_CODE ?? SVGUtils.SYMBOL_AS_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "middle")
-                    break;
-                case "Ds":
-                    SHIFT_X += STEP
-                    SHIFT_Y -= STEP
-                    SVGUtils.SYMBOL_DS_CODE = this.#settings.SYMBOL_DS_CODE ?? SVGUtils.SYMBOL_DS_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "middle")
-                    break;
-                case "Mc":
-                    SHIFT_Y -= STEP
-                    SVGUtils.SYMBOL_MC_CODE = this.#settings.SYMBOL_MC_CODE ?? SVGUtils.SYMBOL_MC_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "middle")
-                    break;
-                case "Ic":
-                    SHIFT_Y += STEP
-                    SVGUtils.SYMBOL_IC_CODE = this.#settings.SYMBOL_IC_CODE ?? SVGUtils.SYMBOL_IC_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "middle")
-                    break;
-                default:
-                    console.error(axis.name)
-                    throw new Error("Unknown axis name.")
-            }
-            symbol.setAttribute("font-family", this.#settings.AXIS_FONT_FAMILY ?? this.#settings.CHART_FONT_FAMILY);
-            symbol.setAttribute("font-size", this.#settings.RADIX_AXIS_FONT_SIZE);
-            symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);
-            symbol.setAttribute("fill", this.#settings.CHART_MAIN_AXIS_COLOR);
-            symbol.setAttribute('paint-order', 'stroke');
-
-            if (this.#settings.CLASS_AXIS) {
-                symbol.setAttribute('class', this.#settings.CLASS_AXIS + ' ' + this.#settings.CLASS_AXIS + '--' + axis.name.toLowerCase());
-            }
-
-            if (this.#settings.INSERT_ELEMENT_TITLE) {
-                symbol.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.axis[axis.name]))
-            }
-
-            axisGroup.appendChild(symbol);
-            wrapper.appendChild(axisGroup)
         }
 
         this.#root.appendChild(wrapper)
