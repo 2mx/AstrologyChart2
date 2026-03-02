@@ -1,3 +1,5 @@
+dist/astrochart2.js
+dist/astrochart2.js.map
 .project
 node_modules/*
 doc/*
