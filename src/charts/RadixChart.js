@@ -490,7 +490,15 @@ class RadixChart extends Chart {
             const isLineInCollisionWithPoint = ! this.#settings.CHART_ALLOW_HOUSE_OVERLAP && Utils.isCollision(cusps[i].angle, pointsPositions, this.#settings.POINT_COLLISION_RADIUS / 2)
 
             const startPos = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getCenterCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.getAscendantShift()))
-            const endPos = Utils.positionOnCircle(this.#centerX, this.#centerY, isLineInCollisionWithPoint ? this.getCenterCircleRadius() + ((this.getRullerCircleRadius() - this.getCenterCircleRadius()) / 6) : this.getRullerCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.getAscendantShift()))
+            
+            let lineRadius = this.getRullerCircleRadius();
+            if (mainAxisIndexes.includes(i)) {
+                lineRadius = this.getRadius();
+            } else if (isLineInCollisionWithPoint) {
+                lineRadius = this.getCenterCircleRadius() + ((this.getRullerCircleRadius() - this.getCenterCircleRadius()) / 6);
+            }
+            
+            const endPos = Utils.positionOnCircle(this.#centerX, this.#centerY, lineRadius, Utils.degreeToRadian(cusps[i].angle, this.getAscendantShift()))
 
             const line = SVGUtils.SVGLine(startPos.x, startPos.y, endPos.x, endPos.y)
             line.setAttribute("stroke", mainAxisIndexes.includes(i) ? this.#settings.CHART_MAIN_AXIS_COLOR : this.#settings.CHART_LINE_COLOR)

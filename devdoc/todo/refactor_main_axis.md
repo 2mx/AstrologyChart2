@@ -4,7 +4,9 @@
 En mode transit (32 niveaux), les axes principaux (As, Mc, Ds, Ic) du thème natal ne s'affichaient plus correctement. Ils étaient soit trop courts (s'arrêtant au cercle intérieur), soit redoublés de manière erronée par le `TransitChart`.
 
 ## Changements effectués
-- **RadixChart.js** : Restauration du comportement d'origine. Les axes cardinaux utilisent désormais toujours le rayon complet (`getRadius()`), qu'il y ait 24 ou 32 niveaux. Cela permet aux axes natals de traverser tout le graphique jusqu'au bord extérieur, servant de repère stable même en vue Transit.
+- **RadixChart.js** : 
+    - Restauration du comportement d'origine. Les axes cardinaux utilisent désormais toujours le rayon complet (`getRadius()`), qu'il y ait 24 ou 32 niveaux. Cela permet aux axes natals de traverser tout le graphique jusqu'au bord extérieur, servant de repère stable même en vue Transit.
+    - **Lignes des cuspides (axes transversaux)** : Correction dans `#drawCusps`. Les lignes pour les maisons 1, 4, 7 et 10 s'étendent désormais jusqu'au bord extérieur (`getRadius()`) pour rejoindre les symboles, au lieu de s'arrêter prématurément au bord du radix en mode Transit.
 - **TransitChart.js** : Suppression de la méthode `#drawMainAxisDescription`. Cette méthode était redondante car elle tentait de dessiner des axes de transit spécifiques par-dessus les axes natals, avec un positionnement et des alignements de symboles incorrects.
 
 ## Résultat attendu
