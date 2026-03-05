@@ -39,7 +39,7 @@ class TransitChart extends Chart {
      * @param {RadixChart} radix
      */
     constructor(radix) {
-        if (! (radix instanceof RadixChart)) {
+        if (!(radix instanceof RadixChart)) {
             throw new Error('Bad param radix.')
         }
 
@@ -72,7 +72,7 @@ class TransitChart extends Chart {
      */
     setData(data) {
         let status = this.validateData(data)
-        if (! status.isValid) {
+        if (!status.isValid) {
             throw new Error(status.message)
         }
 
@@ -111,7 +111,7 @@ class TransitChart extends Chart {
      * @return {Array<Object>}
      */
     getAspects(fromPoints, toPoints, aspects) {
-        if (! this.#data) {
+        if (!this.#data) {
             return
         }
 
@@ -142,7 +142,7 @@ class TransitChart extends Chart {
                     return elm.from.name === aspect.to.name && elm.to.name === aspect.from.name
                 })
 
-                if (! isTheSame) {
+                if (!isTheSame) {
                     arr.push(aspect)
                 }
 
@@ -180,19 +180,20 @@ class TransitChart extends Chart {
     #drawRuler() {
         const NUMBER_OF_DIVIDERS = 72
         const STEP = 5
+        const shift = this.#radix.getAscendantShift()
 
         const wrapper = SVGUtils.SVGGroup()
 
-        let startAngle = this.#radix.getAscendantShift()
         for (let i = 0; i < NUMBER_OF_DIVIDERS; i++) {
-            let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius(), Utils.degreeToRadian(startAngle))
-            let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, (i % 2) ? this.getRadius() - ((this.getRadius() - this.#getRullerCircleRadius()) / 2) : this.getRadius(), Utils.degreeToRadian(startAngle))
+            let zodiacDegree = i * STEP
+            let visualAngle = Utils.degreeToRadian(zodiacDegree, shift)
+
+            let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius(), visualAngle)
+            let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, (i % 2) ? this.getRadius() - ((this.getRadius() - this.#getRullerCircleRadius()) / 2) : this.getRadius(), visualAngle)
             const line = SVGUtils.SVGLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
             line.setAttribute("stroke", this.#settings.CHART_LINE_COLOR);
             line.setAttribute("stroke-width", this.#settings.CHART_STROKE);
             wrapper.appendChild(line);
-
-            startAngle += STEP
         }
 
         const circle = SVGUtils.SVGCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius());
@@ -300,7 +301,7 @@ class TransitChart extends Chart {
 
         for (let i = 0; i < cusps.length; i++) {
 
-            const isLineInCollisionWithPoint = ! this.#settings.CHART_ALLOW_HOUSE_OVERLAP && Utils.isCollision(cusps[i].angle, pointsPositions, this.#settings.POINT_COLLISION_RADIUS / 2)
+            const isLineInCollisionWithPoint = !this.#settings.CHART_ALLOW_HOUSE_OVERLAP && Utils.isCollision(cusps[i].angle, pointsPositions, this.#settings.POINT_COLLISION_RADIUS / 2)
 
             const startPos = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getCenterCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.#radix.getAscendantShift()))
             const endPos = Utils.positionOnCircle(this.#centerX, this.#centerY, isLineInCollisionWithPoint ? this.#getCenterCircleRadius() + ((this.#getRullerCircleRadius() - this.#getCenterCircleRadius()) / 6) : this.#getRullerCircleRadius(), Utils.degreeToRadian(cusps[i].angle, this.#radix.getAscendantShift()))
@@ -331,7 +332,7 @@ class TransitChart extends Chart {
             wrapper.appendChild(text)
 
             if (this.#settings.DRAW_HOUSE_DEGREE) {
-                if (Array.isArray(this.#settings.HOUSE_DEGREE_FILTER) && ! this.#settings.HOUSE_DEGREE_FILTER.includes(i + 1)) {
+                if (Array.isArray(this.#settings.HOUSE_DEGREE_FILTER) && !this.#settings.HOUSE_DEGREE_FILTER.includes(i + 1)) {
                     continue;
                 }
                 const degreePos = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius() - (this.getRadius() - this.#getRullerCircleRadius()), Utils.degreeToRadian(startCusp - 1.75, this.#radix.getAscendantShift()))
