@@ -244,9 +244,47 @@ class Utils {
         return pointInCollision !== undefined
     }
 
+    /**
+     * Calculates intersection on bounding box of the symbol to prevent line crossing or undershooting
+     *
+     * @param {Object} startPos - {x:Number, y:Number}
+     * @param {Object} endPos - {x:Number, y:Number}
+     * @param {Number} fontSize - Symbol font size
+     *
+     * @return {Object} - {x:Number, y:Number}
+     */
+    static getAdjustedPointerLineDestination(startPos, endPos, fontSize) {
+        const rectWidth = fontSize * 0.8;
+        const rectHeight = fontSize * 0.8;
+        const cx = endPos.x;
+        const cy = endPos.y;
+
+        let dx = startPos.x - cx;
+        let dy = startPos.y - cy;
+        const len = Math.sqrt(dx * dx + dy * dy);
+
+        if (len > 0) {
+            dx /= len;
+            dy /= len;
+
+            const halfW = rectWidth / 2;
+            const halfH = rectHeight / 2;
+            const tx = (dx !== 0) ? halfW / Math.abs(dx) : Infinity;
+            const ty = (dy !== 0) ? halfH / Math.abs(dy) : Infinity;
+            const t = Math.min(tx, ty);
+
+            return {
+                x: cx + dx * t,
+                y: cy + dy * t
+            };
+        }
+
+        return { x: cx, y: cy };
+    }
 
     /**
      * Removes the content of an element
+
      *
      * @param {String} elementID
      * @param {Function} [beforeHook]
