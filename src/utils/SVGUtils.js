@@ -301,6 +301,19 @@ class SVGUtils {
     }
 
     /**
+     * Apply dataset values dynamically
+     * @static
+     * @param {Element} element
+     * @param {Object} dataset
+     */
+    static applyDataset(element, dataset = {}) {
+        if (!element || !dataset) return;
+        for (const [key, value] of Object.entries(dataset)) {
+            element.dataset[key] = value;
+        }
+    }
+
+    /**
      * SVG symbol
      *
      * @param {String} name
@@ -309,7 +322,7 @@ class SVGUtils {
      *
      * @return {SVGElement}
      */
-    static SVGSymbol(name, xPos, yPos,) {
+    static SVGSymbol(name, xPos, yPos) {
         let element;
         switch (name) {
             case SVGUtils.SYMBOL_AS:
@@ -497,10 +510,6 @@ class SVGUtils {
                 console.debug('Unknown symbol: ' + name)
                 element = SVGUtils.SVGCircle(xPos, yPos, 8)
                 element.setAttribute("stroke", "#333")
-        }
-
-        if (element) {
-            element.setAttribute('data-symbol', name);
         }
 
         return element;

@@ -291,6 +291,10 @@ class RadixChart extends Chart {
             let position = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getOuterCircleRadius() - ((this.getOuterCircleRadius() - this.getInnerCircleRadius()) / 2), Utils.degreeToRadian(angleInDegree + STEP / 2, this.getAscendantShift()))
 
             let symbol = SVGUtils.SVGSymbol(SYMBOL_SIGNS[symbolIndex], position.x, position.y)
+            SVGUtils.applyDataset(symbol, {
+                symbolType: 'sign',
+                symbolName: SYMBOL_SIGNS[symbolIndex]
+            });
             symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
             symbol.setAttribute("text-anchor", "middle") // start, middle, end
             symbol.setAttribute("dominant-baseline", "middle")
@@ -453,7 +457,11 @@ class RadixChart extends Chart {
              * Symnol of the celestial body + points
              * @type {SVGElement}
              */
-            const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW)
+            const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW, {
+                symbolType: 'planet',
+                symbolName: pointData.name,
+                chart: 'radix'
+            })
             symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
             symbol.setAttribute("text-anchor", "middle") // start, middle, end
             symbol.setAttribute("dominant-baseline", "middle")
@@ -505,6 +513,11 @@ class RadixChart extends Chart {
 
             const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.getAscendantShift()))
             const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`)
+            SVGUtils.applyDataset(text, {
+                symbolType: 'house',
+                symbolName: `${i + 1}`,
+                chart: 'radix'
+            });
             text.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY)
             text.setAttribute("text-anchor", "middle") // start, middle, end
             text.setAttribute("dominant-baseline", "middle")
@@ -619,6 +632,10 @@ class RadixChart extends Chart {
             symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);
             symbol.setAttribute("fill", this.#settings.CHART_MAIN_AXIS_COLOR);
             symbol.setAttribute('paint-order', 'stroke');
+            SVGUtils.applyDataset(symbol, {
+                symbolType: 'axis',
+                symbolName: axis.name
+            });
 
             if (this.#settings.CLASS_AXIS) {
                 symbol.setAttribute('class', this.#settings.CLASS_AXIS + ' ' + this.#settings.CLASS_AXIS + '--' + axis.name.toLowerCase());

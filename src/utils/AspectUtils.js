@@ -68,7 +68,7 @@ class AspectUtils {
                     let orbLimit = ((aspect.orbs?.[fromP.name] ?? aspect.orb) + (aspect.orbs?.[toP.name] ?? aspect.orb)) / 2
 
                     if (Math.abs(orb) <= orbLimit) {
-                        aspectList.push({aspect: aspect, from: fromP, to: toP, precision: orb})
+                        aspectList.push({ aspect: aspect, from: fromP, to: toP, precision: orb })
                     }
                 }
             }
@@ -179,7 +179,7 @@ class AspectUtils {
             const line1 = SVGUtils.SVGLine(splitLine1[0].x, splitLine1[0].y, splitLine1[1].x, splitLine1[1].y)
             line1.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
 
-            if (settings.CHART_STROKE_MINOR_ASPECT && ! (asp.aspect.isMajor ?? false)) {
+            if (settings.CHART_STROKE_MINOR_ASPECT && !(asp.aspect.isMajor ?? false)) {
                 line1.setAttribute("stroke-width", settings.CHART_STROKE_MINOR_ASPECT);
             } else {
                 line1.setAttribute("stroke-width", settings.CHART_STROKE);
@@ -192,7 +192,7 @@ class AspectUtils {
             const line2 = SVGUtils.SVGLine(splitLine2[0].x, splitLine2[0].y, splitLine2[1].x, splitLine2[1].y)
             line2.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
 
-            if (settings.CHART_STROKE_MINOR_ASPECT && ! (asp.aspect.isMajor ?? false)) {
+            if (settings.CHART_STROKE_MINOR_ASPECT && !(asp.aspect.isMajor ?? false)) {
                 line2.setAttribute("stroke-width", settings.CHART_STROKE_MINOR_ASPECT);
             } else {
                 line2.setAttribute("stroke-width", settings.CHART_STROKE);
@@ -221,6 +221,10 @@ class AspectUtils {
             const lineCenterX = (fromPoint.x + toPoint.x) / 2
             const lineCenterY = (fromPoint.y + toPoint.y) / 2 - (settings.ASPECTS_FONT_SIZE ?? 20) / 18 // nudge a bit higher Astronomicon symbol
             const symbol = SVGUtils.SVGSymbol(asp.aspect.name, lineCenterX, lineCenterY)
+            SVGUtils.applyDataset(symbol, {
+                symbolType: 'aspect',
+                symbolName: asp.aspect.name
+            });
             symbol.setAttribute("font-family", settings.CHART_FONT_FAMILY ?? "Astronomicon");
             symbol.setAttribute("text-anchor", "middle") // start, middle, end
             symbol.setAttribute("dominant-baseline", "middle")

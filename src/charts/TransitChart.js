@@ -266,7 +266,11 @@ class TransitChart extends Chart {
              * Symnol of the celestial body + points
              * @type {SVGElement}
              */
-            const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW)
+            const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW, {
+                symbolType: 'planet',
+                symbolName: pointData.name,
+                chart: 'transit'
+            })
             symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
             symbol.setAttribute("text-anchor", "middle") // start, middle, end
             symbol.setAttribute("dominant-baseline", "middle")
@@ -318,6 +322,11 @@ class TransitChart extends Chart {
 
             const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.#radix.getAscendantShift()))
             const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`)
+            SVGUtils.applyDataset(text, {
+                symbolType: 'house',
+                symbolName: `${i + 1}`,
+                chart: 'transit'
+            });
             text.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY)
             text.setAttribute("text-anchor", "middle") // start, middle, end
             text.setAttribute("dominant-baseline", "middle")

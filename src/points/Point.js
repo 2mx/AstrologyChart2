@@ -28,13 +28,13 @@ class Point {
         this.#sign = pointData.sign ?? null
         this.#isRetrograde = pointData.isRetrograde ?? false
 
-        if (! Array.isArray(cusps) || cusps.length !== 12) {
+        if (!Array.isArray(cusps) || cusps.length !== 12) {
             throw new Error("Bad param cusps. ")
         }
 
         this.#cusps = cusps
 
-        if (! settings) {
+        if (!settings) {
             throw new Error('Bad param settings.')
         }
 
@@ -84,14 +84,15 @@ class Point {
      * @param {Number} yPos
      * @param {Number} [angleShift]
      * @param {Boolean} [isProperties] - angleInSign, dignities, retrograde
+     * @param {Object} [dataset]
      *
      * @return {SVGElement}
      */
-    getSymbol(xPos, yPos, angleShift = 0, isProperties = true) {
+    getSymbol(xPos, yPos, angleShift = 0, isProperties = true, dataset = null) {
         const wrapper = SVGUtils.SVGGroup()
 
         const symbol = SVGUtils.SVGSymbol(this.#name, xPos, yPos)
-        symbol.setAttribute('data-name', this.#name)
+        SVGUtils.applyDataset(symbol, dataset);
 
         if (this.#settings.CLASS_CELESTIAL) {
             symbol.setAttribute('class', this.#settings.CLASS_CELESTIAL + ' ' + this.#settings.CLASS_CELESTIAL + '--' + this.#name.toLowerCase());
@@ -148,7 +149,7 @@ class Point {
              * Allows change the angle string, e.g. add the degree symbol ° with the ^ character from Astronomicon
              */
             let angle = this.getAngleInSign();
-            let anglePosition = Utils.fillTemplate(this.#settings.ANGLE_TEMPLATE, {angle: angle});
+            let anglePosition = Utils.fillTemplate(this.#settings.ANGLE_TEMPLATE, { angle: angle });
 
             const angleInSignText = SVGUtils.SVGText(angleInSignPosition.x, angleInSignPosition.y, anglePosition)
             angleInSignText.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);

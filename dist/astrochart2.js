@@ -391,7 +391,7 @@
     static SYMBOL_DS_CODE = "f";
     static SYMBOL_MC_CODE = "d";
     static SYMBOL_IC_CODE = "e";
-    static SYMBOL_RETROGRADE_CODE = "M";
+    static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL_CODE;
     static SYMBOL_CONJUNCTION_CODE = "!";
     static SYMBOL_OPPOSITION_CODE = '"';
     static SYMBOL_SQUARE_CODE = "#";
@@ -564,6 +564,18 @@
       return text;
     }
     /**
+     * Apply dataset values dynamically
+     * @static
+     * @param {Element} element
+     * @param {Object} dataset
+     */
+    static applyDataset(element, dataset = {}) {
+      if (!element || !dataset) return;
+      for (const [key, value] of Object.entries(dataset)) {
+        element.dataset[key] = value;
+      }
+    }
+    /**
      * SVG symbol
      *
      * @param {String} name
@@ -713,9 +725,6 @@
           console.debug("Unknown symbol: " + name);
           element = SVGUtils.SVGCircle(xPos, yPos, 8);
           element.setAttribute("stroke", "#333");
-      }
-      if (element) {
-        element.setAttribute("data-symbol", name);
       }
       return element;
       function asSymbol(xPos2, yPos2) {
@@ -1037,36 +1046,6 @@
       return pointInCollision !== void 0;
     }
     /**
-     * Calculate intersection on bounding box of the symbol to prevent line crossing or undershooting
-     * @param {Object} startPos 
-     * @param {Object} endPos 
-     * @param {Number} fontSize 
-     * @returns {Object} adjusted destination position
-     */
-    static getAdjustedPointerLineDestination(startPos, endPos, fontSize) {
-      const rectWidth = fontSize * 0.8;
-      const rectHeight = fontSize * 0.8;
-      const cx = endPos.x;
-      const cy = endPos.y;
-      let dx = startPos.x - cx;
-      let dy = startPos.y - cy;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      if (len > 0) {
-        dx /= len;
-        dy /= len;
-        const halfW = rectWidth / 2;
-        const halfH = rectHeight / 2;
-        const tx = dx !== 0 ? halfW / Math.abs(dx) : Infinity;
-        const ty = dy !== 0 ? halfH / Math.abs(dy) : Infinity;
-        const t = Math.min(tx, ty);
-        return {
-          x: cx + dx * t,
-          y: cy + dy * t
-        };
-      }
-      return { x: cx, y: cy };
-    }
-    /**
      * Removes the content of an element
      *
      * @param {String} elementID
@@ -1236,6 +1215,10 @@
         const lineCenterX = (fromPoint.x + toPoint.x) / 2;
         const lineCenterY = (fromPoint.y + toPoint.y) / 2 - (settings.ASPECTS_FONT_SIZE ?? 20) / 18;
         const symbol = SVGUtils.SVGSymbol(asp.aspect.name, lineCenterX, lineCenterY);
+        SVGUtils.applyDataset(symbol, {
+          symbolType: "aspect",
+          symbolName: asp.aspect.name
+        });
         symbol.setAttribute("font-family", settings.CHART_FONT_FAMILY ?? "Astronomicon");
         symbol.setAttribute("text-anchor", "middle");
         symbol.setAttribute("dominant-baseline", "middle");
@@ -1416,13 +1399,14 @@
      * @param {Number} yPos
      * @param {Number} [angleShift]
      * @param {Boolean} [isProperties] - angleInSign, dignities, retrograde
+     * @param {Object} [dataset]
      *
      * @return {SVGElement}
      */
-    getSymbol(xPos, yPos, angleShift = 0, isProperties = true) {
+    getSymbol(xPos, yPos, angleShift = 0, isProperties = true, dataset = null) {
       const wrapper = SVGUtils.SVGGroup();
       const symbol = SVGUtils.SVGSymbol(this.#name, xPos, yPos);
-      symbol.setAttribute("data-name", this.#name);
+      SVGUtils.applyDataset(symbol, dataset);
       if (this.#settings.CLASS_CELESTIAL) {
         symbol.setAttribute("class", this.#settings.CLASS_CELESTIAL + " " + this.#settings.CLASS_CELESTIAL + "--" + this.#name.toLowerCase());
       }
@@ -1961,6 +1945,10 @@
       const makeSymbol = (symbolIndex, angleInDegree) => {
         let position = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getOuterCircleRadius() - (this.getOuterCircleRadius() - this.getInnerCircleRadius()) / 2, Utils.degreeToRadian(angleInDegree + STEP / 2, this.getAscendantShift()));
         let symbol = SVGUtils.SVGSymbol(SYMBOL_SIGNS[symbolIndex], position.x, position.y);
+        SVGUtils.applyDataset(symbol, {
+          symbolType: "sign",
+          symbolName: SYMBOL_SIGNS[symbolIndex]
+        });
         symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
         symbol.setAttribute("text-anchor", "middle");
         symbol.setAttribute("dominant-baseline", "middle");
@@ -2018,17 +2006,18 @@
     #drawRuler() {
       const NUMBER_OF_DIVIDERS = 72;
       const STEP = 5;
+      const shift = this.getAscendantShift();
       const wrapper = SVGUtils.SVGGroup();
       wrapper.classList.add("c-radix-ruler");
-      let startAngle = this.getAscendantShift();
       for (let i = 0; i < NUMBER_OF_DIVIDERS; i++) {
-        let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getRullerCircleRadius(), Utils.degreeToRadian(startAngle));
-        let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, i % 2 ? this.getInnerCircleRadius() - (this.getInnerCircleRadius() - this.getRullerCircleRadius()) / 2 : this.getInnerCircleRadius(), Utils.degreeToRadian(startAngle));
+        let zodiacDegree = i * STEP;
+        let visualAngle = Utils.degreeToRadian(zodiacDegree, shift);
+        let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getRullerCircleRadius(), visualAngle);
+        let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, i % 2 ? this.getInnerCircleRadius() - (this.getInnerCircleRadius() - this.getRullerCircleRadius()) / 2 : this.getInnerCircleRadius(), visualAngle);
         const line = SVGUtils.SVGLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
         line.setAttribute("stroke", this.#settings.CHART_LINE_COLOR);
         line.setAttribute("stroke-width", this.#settings.CHART_STROKE);
         wrapper.appendChild(line);
-        startAngle += STEP;
       }
       const circle = SVGUtils.SVGCircle(this.#centerX, this.#centerY, this.getRullerCircleRadius());
       circle.setAttribute("stroke", this.#settings.CHART_CIRCLE_COLOR);
@@ -2062,8 +2051,11 @@
         }
         const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.getAscendantShift()));
         const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
-        const adjustedDest = Utils.getAdjustedPointerLineDestination(pointerLineStart, pointerLineEndPosition, this.#settings.RADIX_POINTS_FONT_SIZE);
-        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, adjustedDest.x, adjustedDest.y);
+        const midPoint = {
+          x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
+          y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
+        };
+        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
         if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
           pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
         } else {
@@ -2071,7 +2063,11 @@
         }
         pointerLine.setAttribute("stroke-width", this.#settings.CHART_STROKE / 2);
         pointGroup.appendChild(pointerLine);
-        const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW);
+        const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW, {
+          symbolType: "planet",
+          symbolName: pointData.name,
+          chart: "radix"
+        });
         symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
         symbol.setAttribute("text-anchor", "middle");
         symbol.setAttribute("dominant-baseline", "middle");
@@ -2110,6 +2106,11 @@
         const textAngle = startCusp + gap / 2;
         const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.getAscendantShift()));
         const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`);
+        SVGUtils.applyDataset(text, {
+          symbolType: "house",
+          symbolName: `${i + 1}`,
+          chart: "radix"
+        });
         text.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("dominant-baseline", "middle");
@@ -2158,8 +2159,8 @@
       }];
       const wrapper = SVGUtils.SVGGroup();
       wrapper.classList.add("c-radix-axis");
-      const rad1 = this.#numberOfLevels === 24 ? this.getRadius() : this.getInnerCircleRadius();
-      const rad2 = this.#numberOfLevels === 24 ? this.getRadius() + AXIS_LENGTH : this.getInnerCircleRadius() + AXIS_LENGTH / 2;
+      const rad1 = this.getRadius();
+      const rad2 = this.getRadius() + AXIS_LENGTH;
       for (const axis of axisList) {
         const axisGroup = SVGUtils.SVGGroup();
         axisGroup.classList.add("c-radix-axis__axis");
@@ -2215,6 +2216,10 @@
         symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);
         symbol.setAttribute("fill", this.#settings.CHART_MAIN_AXIS_COLOR);
         symbol.setAttribute("paint-order", "stroke");
+        SVGUtils.applyDataset(symbol, {
+          symbolType: "axis",
+          symbolName: axis.name
+        });
         if (this.#settings.CLASS_AXIS) {
           symbol.setAttribute("class", this.#settings.CLASS_AXIS + " " + this.#settings.CLASS_AXIS + "--" + axis.name.toLowerCase());
         }
@@ -2382,22 +2387,22 @@
       this.#drawPoints(data);
       this.#drawRuler();
       this.#drawBorders();
-      this.#settings.CHART_DRAW_MAIN_AXIS && this.#drawMainAxisDescription(data);
       this.#settings.DRAW_ASPECTS && this.drawAspects();
     }
     #drawRuler() {
       const NUMBER_OF_DIVIDERS = 72;
       const STEP = 5;
+      const shift = this.#radix.getAscendantShift();
       const wrapper = SVGUtils.SVGGroup();
-      let startAngle = this.#radix.getAscendantShift();
       for (let i = 0; i < NUMBER_OF_DIVIDERS; i++) {
-        let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius(), Utils.degreeToRadian(startAngle));
-        let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, i % 2 ? this.getRadius() - (this.getRadius() - this.#getRullerCircleRadius()) / 2 : this.getRadius(), Utils.degreeToRadian(startAngle));
+        let zodiacDegree = i * STEP;
+        let visualAngle = Utils.degreeToRadian(zodiacDegree, shift);
+        let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius(), visualAngle);
+        let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, i % 2 ? this.getRadius() - (this.getRadius() - this.#getRullerCircleRadius()) / 2 : this.getRadius(), visualAngle);
         const line = SVGUtils.SVGLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
         line.setAttribute("stroke", this.#settings.CHART_LINE_COLOR);
         line.setAttribute("stroke-width", this.#settings.CHART_STROKE);
         wrapper.appendChild(line);
-        startAngle += STEP;
       }
       const circle = SVGUtils.SVGCircle(this.#centerX, this.#centerY, this.#getRullerCircleRadius());
       circle.setAttribute("stroke", this.#settings.CHART_CIRCLE_COLOR);
@@ -2431,8 +2436,11 @@
         }
         const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.#radix.getAscendantShift()));
         const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
-        const adjustedDest = Utils.getAdjustedPointerLineDestination(pointerLineStart, pointerLineEndPosition, this.#settings.RADIX_POINTS_FONT_SIZE);
-        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, adjustedDest.x, adjustedDest.y);
+        const midPoint = {
+          x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
+          y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
+        };
+        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
         if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
           pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
         } else {
@@ -2440,7 +2448,11 @@
         }
         pointerLine.setAttribute("stroke-width", this.#settings.CHART_STROKE / 2);
         pointGroup.appendChild(pointerLine);
-        const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW);
+        const symbol = point.getSymbol(symbolPosition.x, symbolPosition.y, Utils.DEG_0, this.#settings.POINT_PROPERTIES_SHOW, {
+          symbolType: "planet",
+          symbolName: pointData.name,
+          chart: "transit"
+        });
         symbol.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
         symbol.setAttribute("text-anchor", "middle");
         symbol.setAttribute("dominant-baseline", "middle");
@@ -2479,6 +2491,11 @@
         const textAngle = startCusp + gap / 2;
         const textPos = Utils.positionOnCircle(this.#centerX, this.#centerY, textRadius, Utils.degreeToRadian(textAngle, this.#radix.getAscendantShift()));
         const text = SVGUtils.SVGText(textPos.x, textPos.y, `${i + 1}`);
+        SVGUtils.applyDataset(text, {
+          symbolType: "house",
+          symbolName: `${i + 1}`,
+          chart: "transit"
+        });
         text.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("dominant-baseline", "middle");
@@ -2502,96 +2519,6 @@
           degree.setAttribute("fill", this.#settings.HOUSE_DEGREE_COLOR || this.#settings.TRANSIT_HOUSE_NUMBER_COLOR || this.#settings.CHART_HOUSE_NUMBER_COLOR);
           wrapper.appendChild(degree);
         }
-      }
-      this.#root.appendChild(wrapper);
-    }
-    /*
-     * Draw main axis descrition
-     * @param {Array} axisList
-     */
-    #drawMainAxisDescription(data) {
-      const AXIS_LENGTH = 10;
-      const cusps = data.cusps;
-      const axisList = [{
-        name: SVGUtils.SYMBOL_AS,
-        angle: cusps[0].angle
-      }, {
-        name: SVGUtils.SYMBOL_IC,
-        angle: cusps[3].angle
-      }, {
-        name: SVGUtils.SYMBOL_DS,
-        angle: cusps[6].angle
-      }, {
-        name: SVGUtils.SYMBOL_MC,
-        angle: cusps[9].angle
-      }];
-      const wrapper = SVGUtils.SVGGroup();
-      wrapper.classList.add("c-transit-axis");
-      const rad1 = this.getRadius();
-      const rad2 = this.getRadius() + AXIS_LENGTH;
-      for (const axis of axisList) {
-        const axisGroup = SVGUtils.SVGGroup();
-        axisGroup.classList.add("c-transit-axis__axis");
-        axisGroup.classList.add("c-transit-axis__axis--" + axis.name.toLowerCase());
-        let startPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad1, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()));
-        let endPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()));
-        let line = SVGUtils.SVGLine(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-        line.setAttribute("stroke", this.#settings.CHART_MAIN_AXIS_COLOR);
-        line.setAttribute("stroke-width", this.#settings.CHART_MAIN_STROKE);
-        axisGroup.appendChild(line);
-        let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2 + AXIS_LENGTH, Utils.degreeToRadian(axis.angle, this.#radix.getAscendantShift()));
-        let symbol;
-        let SHIFT_X = 0;
-        let SHIFT_Y = 0;
-        const STEP = 0;
-        switch (axis.name) {
-          case "As":
-            SHIFT_X -= STEP;
-            SHIFT_Y -= STEP;
-            SVGUtils.SYMBOL_AS_CODE = this.#settings.SYMBOL_AS_CODE ?? SVGUtils.SYMBOL_AS_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "middle");
-            break;
-          case "Ds":
-            SHIFT_X += STEP;
-            SHIFT_Y -= STEP;
-            SVGUtils.SYMBOL_DS_CODE = this.#settings.SYMBOL_DS_CODE ?? SVGUtils.SYMBOL_DS_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "middle");
-            break;
-          case "Mc":
-            SHIFT_Y -= STEP;
-            SVGUtils.SYMBOL_MC_CODE = this.#settings.SYMBOL_MC_CODE ?? SVGUtils.SYMBOL_MC_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "middle");
-            break;
-          case "Ic":
-            SHIFT_Y += STEP;
-            SVGUtils.SYMBOL_IC_CODE = this.#settings.SYMBOL_IC_CODE ?? SVGUtils.SYMBOL_IC_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "middle");
-            break;
-          default:
-            console.error(axis.name);
-            throw new Error("Unknown axis name.");
-        }
-        symbol.setAttribute("font-family", this.#settings.AXIS_FONT_FAMILY ?? this.#settings.CHART_FONT_FAMILY);
-        symbol.setAttribute("font-size", this.#settings.RADIX_AXIS_FONT_SIZE);
-        symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);
-        symbol.setAttribute("fill", this.#settings.CHART_MAIN_AXIS_COLOR);
-        symbol.setAttribute("paint-order", "stroke");
-        if (this.#settings.CLASS_AXIS) {
-          symbol.setAttribute("class", this.#settings.CLASS_AXIS + " " + this.#settings.CLASS_AXIS + "--" + axis.name.toLowerCase());
-        }
-        if (this.#settings.INSERT_ELEMENT_TITLE) {
-          symbol.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.axis[axis.name]));
-        }
-        axisGroup.appendChild(symbol);
-        wrapper.appendChild(axisGroup);
       }
       this.#root.appendChild(wrapper);
     }
