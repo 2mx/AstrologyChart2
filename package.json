@@ -25,13 +25,14 @@
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
     "jsdoc": "^4.0.2",
+    "terser": "^5.46.2",
     "vite": "^7.3.1",
     "vite-plugin-banner": "^0.8.1"
   },
   "scripts": {
     "dev": "vite",
-    "watch": "vite build --watch --mode development",
-    "build": "vite build",
+    "watch": "vite build --watch --mode debug",
+    "build": "vite build --mode debug && vite build --mode production",
     "test": "jest",
     "doc": "jsdoc -c jsdoc.json"
   }

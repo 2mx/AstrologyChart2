@@ -4,23 +4,19 @@ import banner from 'vite-plugin-banner';
 import pkg from './package.json';
 
 export default defineConfig(({ mode }) => {
-  const isDev = mode === 'development';
+  const isDev = mode === 'development' || mode === 'debug';
 
   return {
     build: {
       lib: {
         entry: path.resolve(__dirname, 'src/index.js'),
         name: 'astrology',
-        // En mode dev, on génère astrochart2.js, en prod astrochart2.min.js
-        fileName: (format) => format === 'umd' 
-          ? (isDev ? 'astrochart2.js' : 'astrochart2.min.js') 
-          : `astrochart2.${format}.js`,
+        fileName: (format) => mode === 'debug' ? 'astrochart2.js' : 'astrochart2.min.js',
         formats: ['umd'],
       },
       sourcemap: true,
       emptyOutDir: false,
-      // Désactive la minification en mode dev pour faciliter le débogage dans l'autre projet
-      minify: isDev ? false : 'terser',
+      minify: mode === 'debug' ? false : 'terser',
       terserOptions: {
         format: {
           comments: false,
