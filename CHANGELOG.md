@@ -8,14 +8,17 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+**Base Integration**: Merged and rebasted on `bplace/master`, which includes `timotejroiko/master`.
+
 ### Added
-- **Ruler Alignment**: Corrected the alignment of the ruler (ruler) to display zodiac degrees correctly.
-- **Modern Build System**: Integrated Vite for faster development and modern bundling.
-- **SVG Data Attributes**: Added `data-chart` and `data-symbol` attributes to SVG elements for easier DOM identification and interaction.
-- **Customizable Retrograde Symbol**: New `POINT_RETROGRADE_SYMBOL_CODE` setting to choose the symbol (e.g., 'M' for Astronomicon's Rr).
+- **Modern Build System**: Integrated Vite for faster development and modern bundling. @see [Migration to Vite](devdoc/features/feat_migration-to-vite.md)
+- **SVG Data Attributes**: Added `data-chart` and `data-symbol` attributes to SVG elements for easier DOM identification and interaction. @see [Data Attributes](devdoc/features/feat_data-attributes.md)
+- **Customizable Retrograde Symbol**: New `POINT_RETROGRADE_SYMBOL_CODE` setting to choose the symbol Px or R.
 
 ### Changed
-- **Base Integration**: Merged and rebasted on `bplace/master`, which includes `timotejroiko/master`.
+- **New Planet Distribution algorithm**: Iterative force-directed algorithm for planet distribution to prevent overlaps and stack overflow errors.
+- **Improved Rendering**: Aspect lines now have a center gap for the symbol, and pointer lines no longer cross planet symbols.
+- **Ruler Alignment**: Corrected the alignment of the ruler (ruler) to display zodiac degrees correctly.
 
 ## [0.8.0] — 2025-06-12
 
@@ -24,12 +27,10 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 - **Precise Orb Management**: Introduced the ability to define specific orbs for every planet and every aspect.
 - **CSS Styling Support**: Added CSS classes to SVG elements (`CLASS_CELESTIAL`, `CLASS_SIGN`, `CLASS_AXIS`, etc.) for full external styling.
-- **Planet Distribution**: Iterative force-directed algorithm for planet distribution to prevent overlaps and stack overflow errors.
 - **New Aspects**: Added Biquintile, Semi-quintile (Decile), and Quintile variants.
 - **Color Customization**: Support for `PLANET_COLORS`, `SIGN_COLORS`, and specific background colors for planets and aspects.
 
 ### Changed
-- **Improved Rendering**: Aspect lines now have a center gap for the symbol, and pointer lines no longer cross planet symbols.
 - **Internal Refactoring**: Modernized codebase using JavaScript private properties (`#`).
 - **Rounding Logic**: Degree calculations now use `Math.floor` instead of `Math.round` to prevent invalid "30º" displays.
 
