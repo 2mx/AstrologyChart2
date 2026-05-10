@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Interactive Astrology Chart</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7fa;
+            --panel-bg: #ffffff;
+            --text-color: #333;
+            --label-color: #666;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .description {
+            margin-bottom: 30px;
+            color: var(--label-color);
+            text-align: center;
+            max-width: 600px;
+        }
+
+        #paper {
+            background: var(--panel-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 600px;
+            height: 600px;
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
+        }
+
+        /* Dialog Styling */
+        dialog {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            padding: 0;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        dialog::backdrop {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(3px);
+        }
+
+        .dialog-header {
+            padding: 20px;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dialog-header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .astronomicon {
+            font-family: 'Astronomicon';
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .dialog-body {
+            padding: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-weight: 600;
+            color: var(--label-color);
+        }
+
+        .value {
+            font-weight: 500;
+        }
+
+        .retrograde-badge {
+            background: #ffecb3;
+            color: #ff8f00;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        /* Hover effects - No movement */
+        [data-symbol-type="planet"] {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        [data-symbol-type="planet"]:hover {
+            opacity: 0.6;
+        }
+
+        .highlighted {
+            filter: drop-shadow(0px 0px 4px var(--primary-color));
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Astrology Chart</h1>
+    <p class="description">
+        Click on any planet symbol in the chart to see its detailed astronomical information in a dialog.
+    </p>
+    
+    <div id="paper"></div>
+    
+    <dialog id="planet-dialog">
+        <div class="dialog-header">
+            <h2 id="dialog-title">Planet</h2>
+            <button class="close-btn" id="close-dialog">&times;</button>
+        </div>
+        <div class="dialog-body" id="dialog-content">
+            <!-- Content will be injected here -->
+        </div>
+    </dialog>
+
+    <script src="../dist/astrochart2.js"></script>
+    <script>
+        // Astronomicon symbol mapping based on src/settings/constants/Point.js and SVGUtils.js
+        const SYMBOLS = {
+            "Sun": "Q",
+            "Moon": "R",
+            "Mercury": "S",
+            "Venus": "T",
+            "Mars": "U",
+            "Jupiter": "V",
+            "Saturn": "W",
+            "Uranus": "X",
+            "Neptune": "Y",
+            "Pluto": "Z",
+            "Chiron": "q",
+            "Lilith": "z",
+            "NNode": "g",
+            "SNode": "h",
+            "Retrograde": "M"
+        };
+
+        // Sample Data
+        const data = {
+            "points": [
+                {"name": "Sun", "angle": 41.6191, "sign": "Taurus"},
+                {"name": "Moon", "angle": 326.3427, "sign": "Aquarius"},
+                {"name": "Mercury", "angle": 20.9778, "isRetrograde": false, "sign": "Aries"},
+                {"name": "Venus", "angle": 66.7293, "isRetrograde": false, "sign": "Gemini"},
+                {"name": "Mars", "angle": 285.5706, "isRetrograde": false, "sign": "Capricorn"},
+                {"name": "Jupiter", "angle": 345.5965, "isRetrograde": false, "sign": "Pisces"},
+                {"name": "Saturn", "angle": 248.2183, "isRetrograde": true, "sign": "Sagittarius"},
+                {"name": "Uranus", "angle": 261.851, "isRetrograde": true, "sign": "Sagittarius"},
+                {"name": "Neptune", "angle": 275.6475, "isRetrograde": true, "sign": "Capricorn"},
+                {"name": "Pluto", "angle": 215.8101, "isRetrograde": true, "sign": "Scorpio"}
+            ],
+            "cusps": [
+                {"angle": 93.9229}, {"angle": 111.3952}, {"angle": 130.5468}, {"angle": 154.5831}, 
+                {"angle": 188.3074}, {"angle": 232.7495}, {"angle": 273.9229}, {"angle": 291.3952}, 
+                {"angle": 310.5468}, {"angle": 334.5831}, {"angle": 8.3074}, {"angle": 52.7495}
+            ]
+        };
+
+        const settings = {
+            RADIX_POINTS_FONT_SIZE: 28,
+            RADIX_SIGNS_FONT_SIZE: 30,
+            CLASS_CELESTIAL: 'celestial-body',
+            POINT_PROPERTIES_SHOW: true,
+            POINT_PROPERTIES_FONT_SIZE: 14,
+            CHART_FONT_FAMILY: 'Astronomicon'
+        };
+
+        // Initialize Universe and Chart
+        const universe = new astrology.Universe('paper', settings);
+        const chart = universe.radix();
+        chart.setData(data);
+
+        const paperEl = document.querySelector('#paper');
+        const dialog = document.querySelector('#planet-dialog');
+        const dialogTitle = document.querySelector('#dialog-title');
+        const dialogContent = document.querySelector('#dialog-content');
+        const closeBtn = document.querySelector('#close-dialog');
+        
+        let lastSelectedElement = null;
+
+        // Close dialog logic
+        closeBtn.addEventListener('click', () => dialog.close());
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) dialog.close();
+        });
+
+        // Event Delegation for planet clicks
+        paperEl.addEventListener('click', (event) => {
+            const target = event.target.closest('[data-symbol-name]');
+            
+            if (target && target.dataset.symbolType === 'planet') {
+                const planetName = target.dataset.symbolName;
+                const planetData = data.points.find(p => p.name === planetName);
+                
+                if (planetData) {
+                    showPlanetDialog(planetData, target);
+                }
+            }
+        });
+
+        /**
+         * Opens the dialog and populates it with planet info
+         */
+        function showPlanetDialog(p, element) {
+            const angleInSign = (p.angle % 30).toFixed(2);
+            const planetSymbol = SYMBOLS[p.name] || "";
+            const retrogradeSymbol = p.isRetrograde ? SYMBOLS["Retrograde"] : "";
+            
+            dialogTitle.innerHTML = `
+                <span class="astronomicon">${planetSymbol}</span>
+                 ${p.isRetrograde ? `<span class="astronomicon" style="color: #ff8f00; margin-left: -5px;">${retrogradeSymbol}</span>` : ""}
+                <span>${p.name}</span>`;
+            
+            dialogContent.innerHTML = `
+                <div class="detail-row">
+                    <span class="label">Zodiac Sign</span>
+                    <span class="value">${p.sign}</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Position in Sign</span>
+                    <span class="value">${angleInSign}°</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Absolute Angle</span>
+                    <span class="value">${p.angle.toFixed(4)}°</span>
+                </div>
+                
+                <div class="detail-row">
+                    <span class="label">Motion</span>
+                    <span class="value">${p.isRetrograde ? 'Retrograde' : 'Direct'}</span>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 0.9em; color: #888; line-height: 1.5;">
+                    In astrology, the <strong>${p.name}</strong> represents specific psychological archetypes and influences within a person's natal chart.
+                </div>
+            `;
+            
+            highlightPlanet(element);
+            dialog.showModal();
+        }
+
+        /**
+         * Highlights the selected planet (without movement)
+         */
+        function highlightPlanet(element) {
+            if (lastSelectedElement) {
+                lastSelectedElement.classList.remove('highlighted');
+            }
+            
+            element.classList.add('highlighted');
+            lastSelectedElement = element;
+        }
+    </script>
+</body>
+</html>
