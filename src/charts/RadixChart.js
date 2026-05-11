@@ -162,11 +162,14 @@ class RadixChart extends Chart {
     }
 
     /**
-     * Get Ascendat shift
+     * Get Ascendant shift
      *
      * @return {Number}
      */
     getAscendantShift() {
+      if(!this.#settings.CHART_ASCENDANT_SHIFT){
+        return Utils.DEG_180;
+      }
         return (this.#data?.cusps[0]?.angle ?? 0) + Utils.DEG_180
     }
 
@@ -551,7 +554,7 @@ class RadixChart extends Chart {
      * @param {Array} axisList
      */
     #drawMainAxisDescription(data) {
-        const AXIS_LENGTH = 10
+        const AXIS_LENGTH = 15
         const cusps = data.cusps
 
         const axisList = [{
@@ -582,47 +585,31 @@ class RadixChart extends Chart {
             line.setAttribute("stroke-width", this.#settings.CHART_MAIN_STROKE);
             axisGroup.appendChild(line);
 
-            let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2, Utils.degreeToRadian(axis.angle, this.getAscendantShift()))
+            let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2 + 12, Utils.degreeToRadian(axis.angle, this.getAscendantShift()))
             let symbol;
-            let SHIFT_X = 0;
-            let SHIFT_Y = 0;
-            const STEP = 2
 
             switch (axis.name) {
                 case "As":
-                    SHIFT_X -= STEP
-                    SHIFT_Y -= STEP
                     SVGUtils.SYMBOL_AS_CODE = this.#settings.SYMBOL_AS_CODE ?? SVGUtils.SYMBOL_AS_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "end")
-                    symbol.setAttribute("dominant-baseline", "middle")
                     break;
                 case "Ds":
-                    SHIFT_X += STEP
-                    SHIFT_Y -= STEP
                     SVGUtils.SYMBOL_DS_CODE = this.#settings.SYMBOL_DS_CODE ?? SVGUtils.SYMBOL_DS_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "start")
-                    symbol.setAttribute("dominant-baseline", "middle")
                     break;
                 case "Mc":
-                    SHIFT_Y -= STEP
                     SVGUtils.SYMBOL_MC_CODE = this.#settings.SYMBOL_MC_CODE ?? SVGUtils.SYMBOL_MC_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "text-top")
                     break;
                 case "Ic":
-                    SHIFT_Y += STEP
                     SVGUtils.SYMBOL_IC_CODE = this.#settings.SYMBOL_IC_CODE ?? SVGUtils.SYMBOL_IC_CODE;
-                    symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y)
-                    symbol.setAttribute("text-anchor", "middle")
-                    symbol.setAttribute("dominant-baseline", "hanging")
                     break;
                 default:
                     console.error(axis.name)
                     throw new Error("Unknown axis name.")
             }
+
+            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x, textPoint.y)
+            symbol.setAttribute("text-anchor", "middle")
+            symbol.setAttribute("dominant-baseline", "middle")
+
             symbol.setAttribute("font-family", this.#settings.AXIS_FONT_FAMILY ?? this.#settings.CHART_FONT_FAMILY);
             symbol.setAttribute("font-size", this.#settings.RADIX_AXIS_FONT_SIZE);
             symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);

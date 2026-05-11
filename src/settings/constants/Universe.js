@@ -96,6 +96,15 @@ export const CHART_DRAW_MAIN_AXIS = true;
  */
 export const CHART_STROKE_WITH_COLOR = false;
 
+/**
+ * Rotate the chart so that the Ascendant (1st house cusp) is always positioned on the left (East) axis.
+ * If set to false, the chart is drawn with 0° Aries at the left position.
+ * @constant
+ * @type {boolean}
+ * @default true
+ */
+export const CHART_ASCENDANT_SHIFT = true;
+
 
 /**
  * All classnames

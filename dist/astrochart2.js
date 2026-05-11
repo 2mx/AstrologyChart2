@@ -21,6 +21,7 @@
   const CHART_ALLOW_HOUSE_OVERLAP = false;
   const CHART_DRAW_MAIN_AXIS = true;
   const CHART_STROKE_WITH_COLOR = false;
+  const CHART_ASCENDANT_SHIFT = true;
   const CLASS_SIGN_SEGMENT = "";
   const CLASS_SIGN = "";
   const CLASS_AXIS = "";
@@ -33,6 +34,7 @@
   const Universe$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     CHART_ALLOW_HOUSE_OVERLAP,
+    CHART_ASCENDANT_SHIFT,
     CHART_CENTER_SIZE,
     CHART_DRAW_MAIN_AXIS,
     CHART_FONT_FAMILY,
@@ -1046,14 +1048,47 @@
       return pointInCollision !== void 0;
     }
     /**
-     * Removes the content of an element
+     * Calculates intersection on bounding box of the symbol to prevent line crossing or undershooting
      *
-     * @param {String} elementID
-     * @param {Function} [beforeHook]
+     * @param {Object} startPos - {x:Number, y:Number}
+     * @param {Object} endPos - {x:Number, y:Number}
+     * @param {Number} fontSize - Symbol font size
      *
-     * @warning - It removes Event Listeners too.
-     * @warning - You will (probably) get memory leak if you delete elements that have attached listeners
+     * @return {Object} - {x:Number, y:Number}
      */
+    static getAdjustedPointerLineDestination(startPos, endPos, fontSize) {
+      const rectWidth = fontSize * 0.8;
+      const rectHeight = fontSize * 0.8;
+      const cx = endPos.x;
+      const cy = endPos.y;
+      let dx = startPos.x - cx;
+      let dy = startPos.y - cy;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len > 0) {
+        dx /= len;
+        dy /= len;
+        const halfW = rectWidth / 2;
+        const halfH = rectHeight / 2;
+        const tx = dx !== 0 ? halfW / Math.abs(dx) : Infinity;
+        const ty = dy !== 0 ? halfH / Math.abs(dy) : Infinity;
+        const t = Math.min(tx, ty);
+        return {
+          x: cx + dx * t,
+          y: cy + dy * t
+        };
+      }
+      return { x: cx, y: cy };
+    }
+    /**
+             * Removes the content of an element
+    
+             *
+             * @param {String} elementID
+             * @param {Function} [beforeHook]
+             *
+             * @warning - It removes Event Listeners too.
+             * @warning - You will (probably) get memory leak if you delete elements that have attached listeners
+             */
     static cleanUp(elementID, beforeHook) {
       let elm = document.getElementById(elementID);
       if (!elm) {
@@ -1843,11 +1878,14 @@
       return this.#universe;
     }
     /**
-     * Get Ascendat shift
+     * Get Ascendant shift
      *
      * @return {Number}
      */
     getAscendantShift() {
+      if (!this.#settings.CHART_ASCENDANT_SHIFT) {
+        return Utils.DEG_180;
+      }
       return (this.#data?.cusps[0]?.angle ?? 0) + Utils.DEG_180;
     }
     /**
@@ -2051,11 +2089,8 @@
         }
         const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerY, this.getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.getAscendantShift()));
         const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
-        const midPoint = {
-          x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
-          y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
-        };
-        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
+        const adjustedDest = Utils.getAdjustedPointerLineDestination(pointerLineStart, pointerLineEndPosition, this.#settings.RADIX_POINTS_FONT_SIZE);
+        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, adjustedDest.x, adjustedDest.y);
         if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
           pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
         } else {
@@ -2142,7 +2177,7 @@
      * @param {Array} axisList
      */
     #drawMainAxisDescription(data) {
-      const AXIS_LENGTH = 10;
+      const AXIS_LENGTH = 15;
       const cusps = data.cusps;
       const axisList = [{
         name: SVGUtils.SYMBOL_AS,
@@ -2171,46 +2206,28 @@
         line.setAttribute("stroke", this.#settings.CHART_MAIN_AXIS_COLOR);
         line.setAttribute("stroke-width", this.#settings.CHART_MAIN_STROKE);
         axisGroup.appendChild(line);
-        let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2, Utils.degreeToRadian(axis.angle, this.getAscendantShift()));
+        let textPoint = Utils.positionOnCircle(this.#centerX, this.#centerY, rad2 + 12, Utils.degreeToRadian(axis.angle, this.getAscendantShift()));
         let symbol;
-        let SHIFT_X = 0;
-        let SHIFT_Y = 0;
-        const STEP = 2;
         switch (axis.name) {
           case "As":
-            SHIFT_X -= STEP;
-            SHIFT_Y -= STEP;
             SVGUtils.SYMBOL_AS_CODE = this.#settings.SYMBOL_AS_CODE ?? SVGUtils.SYMBOL_AS_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "end");
-            symbol.setAttribute("dominant-baseline", "middle");
             break;
           case "Ds":
-            SHIFT_X += STEP;
-            SHIFT_Y -= STEP;
             SVGUtils.SYMBOL_DS_CODE = this.#settings.SYMBOL_DS_CODE ?? SVGUtils.SYMBOL_DS_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "start");
-            symbol.setAttribute("dominant-baseline", "middle");
             break;
           case "Mc":
-            SHIFT_Y -= STEP;
             SVGUtils.SYMBOL_MC_CODE = this.#settings.SYMBOL_MC_CODE ?? SVGUtils.SYMBOL_MC_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "text-top");
             break;
           case "Ic":
-            SHIFT_Y += STEP;
             SVGUtils.SYMBOL_IC_CODE = this.#settings.SYMBOL_IC_CODE ?? SVGUtils.SYMBOL_IC_CODE;
-            symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x + SHIFT_X, textPoint.y + SHIFT_Y);
-            symbol.setAttribute("text-anchor", "middle");
-            symbol.setAttribute("dominant-baseline", "hanging");
             break;
           default:
             console.error(axis.name);
             throw new Error("Unknown axis name.");
         }
+        symbol = SVGUtils.SVGSymbol(axis.name, textPoint.x, textPoint.y);
+        symbol.setAttribute("text-anchor", "middle");
+        symbol.setAttribute("dominant-baseline", "middle");
         symbol.setAttribute("font-family", this.#settings.AXIS_FONT_FAMILY ?? this.#settings.CHART_FONT_FAMILY);
         symbol.setAttribute("font-size", this.#settings.RADIX_AXIS_FONT_SIZE);
         symbol.setAttribute("font-weight", this.#settings.AXIS_FONT_WEIGHT ?? 400);
@@ -2436,11 +2453,8 @@
         }
         const pointerLineEndPosition = Utils.positionOnCircle(this.#centerX, this.#centerY, this.#getPointCircleRadius(), Utils.degreeToRadian(positions[point.getName()], this.#radix.getAscendantShift()));
         const pointerLineStart = this.#settings.DRAW_RULER_MARK ? pointPosition : rulerLineEndPosition;
-        const midPoint = {
-          x: (pointerLineStart.x + pointerLineEndPosition.x) / 2,
-          y: (pointerLineStart.y + pointerLineEndPosition.y) / 2
-        };
-        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, midPoint.x, midPoint.y);
+        const adjustedDest = Utils.getAdjustedPointerLineDestination(pointerLineStart, pointerLineEndPosition, this.#settings.TRANSIT_POINTS_FONT_SIZE);
+        const pointerLine = SVGUtils.SVGLine(pointerLineStart.x, pointerLineStart.y, adjustedDest.x, adjustedDest.y);
         if (this.#settings.PLANET_LINE_USE_PLANET_COLOR) {
           pointerLine.setAttribute("stroke", this.#settings.PLANET_COLORS[pointData.name] ?? this.#settings.CHART_LINE_COLOR);
         } else {
