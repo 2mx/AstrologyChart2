@@ -1,54 +1,138 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>More charts on page</title>
-    <style>
-      .paper{
-        background-color:#eee;
-        width: 100%;
-        max-width: 400px;
-        aspect-ratio: 1 / 1;
-        float:left;
-      }
-      .alert{
-        padding:2em;
-        background-color: green;
-        text-align: center;
-        color:white;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="alert">
-      Each chart is customizable.
-    </div>
+<head>
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>More charts on page</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="alert">
+Each chart is customizable.
+</div>
 
 
-    <div class="paper" id="chart1"></div>
-    <div class="paper" id="chart2"></div>
-    <div class="paper" id="chart3"></div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
+<div class="paper" id="chart1"></div>
+<div class="paper" id="chart2"></div>
+<div class="paper" id="chart3"></div>
 
-    <script src="../dist/astrochart2.js"></script>
-    <script>
-      let data = {
-          "points":[{name:"Moon", angle:64}, {name:"Sun", angle:273}, {name:"Mercury", angle:194}, {name:"Venus", angle:158}, {name:"Mars", angle:304}, {name:"Jupiter", angle:229}, {name:"Saturn", angle:255}, {name:"Uranus", angle:350}, {name:"Neptune", angle:21}, {name:"Pluto", angle:233}, {name:"Lilith", angle:244}, {name:"Chiron", angle:339}, {name:"NNode", angle:285}],
-        "cusps":[ {angle:150}, {angle:180}, {angle:210}, {angle:240}, {angle:270}, {angle:300}, {angle:330},{angle:0}, {angle:30}, {angle:60}, {angle:90}, {angle:120}]
-      }
-      new astrology.Universe('chart1').radix().setData( data )
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>
+eruda.init();
+</script>
+
+<script src="../dist/astrochart2.js"></script>
+<script>
+let data = {
+"points": [{
+name: "Moon",
+angle: 64
+},
+{
+name: "Sun",
+angle: 273
+},
+{
+name: "Mercury",
+angle: 194
+},
+{
+name: "Venus",
+angle: 158
+},
+{
+name: "Mars",
+angle: 304,
+isRetrograde: true
+},
+{
+name: "Jupiter",
+angle: 229,
+isRetrograde: true
+},
+{
+name: "Saturn",
+angle: 255
+},
+{
+name: "Uranus",
+angle: 350
+},
+{
+name: "Neptune",
+angle: 21
+},
+{
+name: "Pluto",
+angle: 233
+},
+{
+name: "Lilith",
+angle: 244
+},
+{
+name: "Chiron",
+angle: 339
+},
+{
+name: "NNode",
+angle: 285
+}],
+"cusps": [ {
+angle: 150
+},
+{
+angle: 180
+},
+{
+angle: 210
+},
+{
+angle: 240
+},
+{
+angle: 270
+},
+{
+angle: 300
+},
+{
+angle: 330
+},
+{
+angle: 0
+},
+{
+angle: 30
+},
+{
+angle: 60
+},
+{
+angle: 90
+},
+{
+angle: 120
+}]
+}
+new astrology.Universe('chart1').radix().setData(data)
 
 
-      const settings = {
-        CHART_ASCENDANT_SHIFT: false,
-        CHART_SIGNS_COLOR:"#fff",  CHART_POINTS_COLOR:"#000", CHART_LINE_COLOR:"#aaa", CHART_TEXT_COLOR:"#aaa"}
-      new astrology.Universe('chart2', settings).radix().setData( data )
+const settings = {
+CHART_ASCENDANT_SHIFT: false,
+POINT_PROPERTIES_SHOW_RETROGRADE: true,
+ANGLE_TEMPLATE: "${angle}",
+CHART_SIGNS_COLOR: "#fff",
+CHART_POINTS_COLOR: "#000",
+CHART_LINE_COLOR: "#aaa",
+CHART_TEXT_COLOR: "#aaa"
+}
+new astrology.Universe('chart2', settings).radix().setData(data)
 
-      new astrology.Universe('chart3', {CHART_STROKE_ONLY:true}).radix().setData( data)
+new astrology.Universe('chart3', {
+CHART_STROKE_ONLY: true
+}).radix().setData(data)
 
-    </script>
-  </body>
+</script>
+</body>
 </html>

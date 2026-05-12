@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Retrograde Settings Example</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+        h2 {
+            margin-top: 20px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <h1>Retrograde Settings</h1>
+    <p class="description">
+        Demonstrating different ways to display retrograde symbols in the chart.
+    </p>
+
+    <div class="chart-container">
+        <h2>1. Default Settings</h2>
+        <div class="paper" id="chart-default"></div>
+    </div>
+
+    <div class="chart-container">
+        <h2>2. Custom Offset</h2>
+        <div class="paper" id="chart-custom-offset"></div>
+    </div>
+
+    <div class="chart-container">
+        <h2>3. Custom Offset + Larger Font</h2>
+        <div class="paper" id="chart-large"></div>
+    </div>
+
+    <script src="../dist/astrochart2.js"></script>
+    <script>
+        const data = {
+            "points": [
+                {"name": "Sun", "angle": 41.6191, "sign": "Taurus"},
+                {"name": "Moon", "angle": 326.3427, "sign": "Aquarius"},
+                {"name": "Mercury", "angle": 20.9778, "isRetrograde": true, "sign": "Aries"},
+                {"name": "Venus", "angle": 66.7293, "isRetrograde": true, "sign": "Gemini"},
+                {"name": "Mars", "angle": 285.5706, "isRetrograde": true, "sign": "Capricorn"},
+                {"name": "Jupiter", "angle": 345.5965, "isRetrograde": true, "sign": "Pisces"},
+                {"name": "Saturn", "angle": 248.2183, "isRetrograde": true, "sign": "Sagittarius"},
+                {"name": "Uranus", "angle": 261.851, "isRetrograde": true, "sign": "Sagittarius"},
+                {"name": "Neptune", "angle": 275.6475, "isRetrograde": true, "sign": "Capricorn"},
+                {"name": "Pluto", "angle": 215.8101, "isRetrograde": true, "sign": "Scorpio"},
+                {"name": "Chiron", "angle": 73.0221, "isRetrograde": true, "sign": "Gemini"},
+                {"name": "Lilith", "angle": 67.2073, "isRetrograde": true, "sign": "Gemini"},
+                {"name": "NNode", "angle": 29.399, "isRetrograde": true, "sign": "Aries"},
+                {"name": "SNode", "angle": 209.399, "isRetrograde": true, "sign": "Libra"}
+            ],
+            "cusps": [
+                {"angle": 93.9229}, {"angle": 111.3952}, {"angle": 130.5468}, {"angle": 154.5831}, 
+                {"angle": 188.3074}, {"angle": 232.7495}, {"angle": 273.9229}, {"angle": 291.3952}, 
+                {"angle": 310.5468}, {"angle": 334.5831}, {"angle": 8.3074}, {"angle": 52.7495}
+            ]
+        };
+
+        // 1. Default
+        new astrology.Universe('chart-default').radix().setData(data);
+
+        // 2. Custom Offset
+        const settingsCustom = {
+           POINT_RETROGRADE_SYMBOL_CODE: "N", RETROGRADE_USE_CUSTOM_OFFSET: true,
+            POINT_PROPERTIES_SHOW: true,
+            POINT_PROPERTIES_ANGLE_OFFSET: 3
+        };
+        new astrology.Universe('chart-custom-offset', settingsCustom).radix().setData(data);
+
+        // 3. Large + Custom Offset
+        const settingsLarge = {
+            RETROGRADE_USE_CUSTOM_OFFSET: true,
+            RADIX_POINTS_FONT_SIZE: 40,
+            POINT_PROPERTIES_FONT_SIZE: 20,
+            CHART_POINT_COLLISION_RADIUS:25,
+            POINT_PROPERTIES_SHOW: true,
+POINT_PROPERTIES_SHOW_ANGLE:false
+        };
+        new astrology.Universe('chart-large', settingsLarge).radix().setData(data);
+    </script>
+</body>
+</html>
