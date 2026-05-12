@@ -46,5 +46,7 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.7.3] — 2023-02-24
 
+Last version published by Kebo.
+
 ### Added
 - Initial release
