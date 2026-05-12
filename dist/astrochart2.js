@@ -144,20 +144,71 @@
   const POINT_PROPERTIES_SHOW = true;
   const POINT_PROPERTIES_SHOW_ANGLE = true;
   const POINT_PROPERTIES_SHOW_SIGN = false;
-  const POINT_PROPERTIES_SHOW_DIGNITY = true;
+  const POINT_PROPERTIES_SHOW_DIGNITY = false;
   const POINT_PROPERTIES_SHOW_RETROGRADE = true;
   const POINT_PROPERTIES_DIGNITY_SYMBOLS = ["r", "d", "e", "f"];
   const POINT_PROPERTIES_FONT_SIZE = 16;
-  const POINT_PROPERTIES_ANGLE_SIZE = 25;
+  const POINT_PROPERTIES_ANGLE_SIZE = 20;
   const POINT_PROPERTIES_RETROGRADE_SIZE = 25;
   const POINT_PROPERTIES_DIGNITY_SIZE = 12;
   const POINT_PROPERTIES_ANGLE_OFFSET = 2;
   const POINT_PROPERTIES_SIGN_OFFSET = 3.5;
-  const POINT_PROPERTIES_RETROGRADE_OFFSET = 5;
+  const POINT_PROPERTIES_RETROGRADE_OFFSET = 4;
+  const RETROGRADE_USE_CUSTOM_OFFSET = false;
+  const RETROGRADE_OFFSET_BY_PLANET = {
+    "mercury": {
+      dx: -2,
+      dy: -2
+    },
+    "venus": {
+      dx: -2,
+      dy: 0
+    },
+    "mars": {
+      dx: -4,
+      dy: -4
+    },
+    "jupiter": {
+      dx: 0,
+      dy: 0
+    },
+    "saturn": {
+      dx: -3,
+      dy: -2
+    },
+    "uranus": {
+      dx: -2,
+      dy: -3
+    },
+    "neptune": {
+      dx: -2,
+      dy: -4
+    },
+    "pluto": {
+      dx: -2,
+      dy: -4
+    },
+    "chiron": {
+      dx: -3,
+      dy: -3
+    },
+    "lilith": {
+      dx: -2,
+      dy: 0
+    },
+    "nnode": {
+      dx: 0,
+      dy: -3
+    },
+    "snode": {
+      dx: 0,
+      dy: -4
+    }
+  };
   const POINT_PROPERTIES_DIGNITY_OFFSET = 6;
-  const POINT_RETROGRADE_SYMBOL_CODE = "M";
+  const POINT_RETROGRADE_SYMBOL_CODE$1 = "M";
   const POINT_COLLISION_RADIUS = 12;
-  const ANGLE_TEMPLATE = "${angle}";
+  const ANGLE_TEMPLATE = "${angle}^";
   const CLASS_CELESTIAL = "";
   const CLASS_POINT_ANGLE = "";
   const CLASS_POINT_SIGN = "";
@@ -192,11 +243,13 @@
     POINT_PROPERTIES_SHOW_SIGN,
     POINT_PROPERTIES_SIGN_COLOR,
     POINT_PROPERTIES_SIGN_OFFSET,
-    POINT_RETROGRADE_SYMBOL_CODE,
+    POINT_RETROGRADE_SYMBOL_CODE: POINT_RETROGRADE_SYMBOL_CODE$1,
     POINT_STROKE,
     POINT_STROKE_COLOR,
     POINT_STROKE_LINECAP,
-    POINT_STROKE_WIDTH
+    POINT_STROKE_WIDTH,
+    RETROGRADE_OFFSET_BY_PLANET,
+    RETROGRADE_USE_CUSTOM_OFFSET
   }, Symbol.toStringTag, { value: "Module" }));
   const CHART_BACKGROUND_COLOR = "none";
   const PLANETS_BACKGROUND_COLOR = "#fff";
@@ -393,7 +446,7 @@
     static SYMBOL_DS_CODE = "f";
     static SYMBOL_MC_CODE = "d";
     static SYMBOL_IC_CODE = "e";
-    static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL_CODE;
+    static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL_CODE$1;
     static SYMBOL_CONJUNCTION_CODE = "!";
     static SYMBOL_OPPOSITION_CODE = '"';
     static SYMBOL_SQUARE_CODE = "#";
@@ -1464,7 +1517,7 @@
         showSign.call(this);
       }
       if (this.#settings.POINT_PROPERTIES_SHOW_RETROGRADE && this.#isRetrograde) {
-        retrograde.call(this);
+        retrograde.call(this, symbol);
       }
       if (this.#settings.POINT_PROPERTIES_SHOW_DIGNITY && this.getDignity()) {
         dignities.call(this);
@@ -1516,12 +1569,35 @@
         }
         wrapper.appendChild(signText);
       }
-      function retrograde() {
-        const retrogradePosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift));
-        const retrogradeText = SVGUtils.SVGText(retrogradePosition.x, retrogradePosition.y, this.#settings.POINT_RETROGRADE_SYMBOL_CODE || SVGUtils.SYMBOL_RETROGRADE_CODE);
+      function retrograde(symbolElement) {
+        let retroX, retroY;
+        if (this.#settings.RETROGRADE_USE_CUSTOM_OFFSET && symbolElement) {
+          const planetFontSize = this.#settings.POINT_PROPERTIES_FONT_SIZE || 16;
+          this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || planetFontSize;
+          const estimatedHalfWidth = planetFontSize * 0.55;
+          const planetHalfHeight = planetFontSize * 0.5;
+          const planetOffset = this.#settings.RETROGRADE_OFFSET_BY_PLANET?.[this.#name.toLowerCase()] ?? {};
+          const dx = planetOffset.dx ?? 0;
+          const dy = planetOffset.dy ?? 0;
+          retroX = xPos + estimatedHalfWidth + dx;
+          retroY = yPos + planetHalfHeight + dy;
+        } else {
+          const chartCenterX2 = this.#settings.CHART_VIEWBOX_WIDTH / 2;
+          const chartCenterY2 = this.#settings.CHART_VIEWBOX_HEIGHT / 2;
+          const angleFromSymbolToCenter2 = Utils.positionToAngle(xPos, yPos, chartCenterX2, chartCenterY2);
+          const retrogradePosition = Utils.positionOnCircle(
+            xPos,
+            yPos,
+            this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS,
+            Utils.degreeToRadian(-angleFromSymbolToCenter2, angleShift)
+          );
+          retroX = retrogradePosition.x;
+          retroY = retrogradePosition.y;
+        }
+        const retrogradeText = SVGUtils.SVGText(retroX, retroY, this.#settings.POINT_RETROGRADE_SYMBOL_CODE);
         retrogradeText.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
-        retrogradeText.setAttribute("text-anchor", "middle");
-        retrogradeText.setAttribute("dominant-baseline", "middle");
+        retrogradeText.setAttribute("text-anchor", "start");
+        retrogradeText.setAttribute("dominant-baseline", "central");
         retrogradeText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
         retrogradeText.setAttribute("fill", this.#settings.POINT_PROPERTIES_RETROGRADE_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
         if (this.#settings.CLASS_POINT_RETROGRADE) {

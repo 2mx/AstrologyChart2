@@ -123,7 +123,7 @@ class Point {
         }
 
         if (this.#settings.POINT_PROPERTIES_SHOW_RETROGRADE && this.#isRetrograde) {
-            retrograde.call(this)
+            retrograde.call(this,symbol)
         }
 
         if (this.#settings.POINT_PROPERTIES_SHOW_DIGNITY && this.getDignity()) {
@@ -209,37 +209,90 @@ class Point {
 
             wrapper.appendChild(signText)
         }
+/*
+ * Retrograde - Displays retrograde symbol next to the planet glyph,
+ * aligned to the right and bottom of the planet glyph.
+ *
+ * Positioning logic:
+ *   retroX = xPos + estimatedHalfWidth  (right edge of planet) + dx (fine-tuning)
+ *   retroY = yPos + planetHalfHeight    (bottom of planet)
+ *          - retrogradeHalfHeight       (bottom of retrograde symbol, aligns both feet)
+ *          + dy                         (fine-tuning)
+ *
+ * Both estimatedHalfWidth and half-heights are derived from font-size,
+ * since getBBox() is unreliable before DOM insertion.
+ *
+ * @param {SVGElement} symbolElement - The planet glyph SVG element
+ */
+function retrograde(symbolElement) {
+    let retroX, retroY;
 
-        /*
-         *  Retrograde
-         */
-        function retrograde() {
-            const retrogradePosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
+    if (this.#settings.RETROGRADE_USE_CUSTOM_OFFSET && symbolElement) {
 
-            const retrogradeText = SVGUtils.SVGText(retrogradePosition.x, retrogradePosition.y, this.#settings.POINT_RETROGRADE_SYMBOL_CODE || SVGUtils.SYMBOL_RETROGRADE_CODE)
-            retrogradeText.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
-            retrogradeText.setAttribute("text-anchor", "middle") // start, middle, end
-            retrogradeText.setAttribute("dominant-baseline", "middle")
-            retrogradeText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
-            retrogradeText.setAttribute("fill", this.#settings.POINT_PROPERTIES_RETROGRADE_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
+        const planetFontSize    = this.#settings.POINT_PROPERTIES_FONT_SIZE || 16;
+        const retrogradeFontSize = this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || planetFontSize;
 
-            if (this.#settings.CLASS_POINT_RETROGRADE) {
-                retrogradeText.setAttribute('class', this.#settings.CLASS_POINT_RETROGRADE);
-            }
+        // Estimated half-width: to reach the right edge of the planet glyph
+        // (xPos is the center of the glyph since text-anchor is "middle")
+        const estimatedHalfWidth = planetFontSize * 0.55;
 
-            if (this.#settings.POINT_STROKE ?? false) {
-                retrogradeText.setAttribute('paint-order', 'stroke');
-                retrogradeText.setAttribute('stroke', this.#settings.POINT_STROKE_COLOR);
-                retrogradeText.setAttribute('stroke-width', this.#settings.POINT_STROKE_WIDTH);
-            }
+        // Foot alignment:
+        // yPos is the vertical center of the planet glyph (dominant-baseline: central)
+        // + planetHalfHeight   → reaches the foot of the planet glyph
+        // - retrogradeHalfHeight → pulls the retrograde symbol up so its foot aligns
+        const planetHalfHeight    = planetFontSize * 0.5;
+        const retrogradeHalfHeight = retrogradeFontSize * 0.5;
 
-            if (this.#settings.INSERT_ELEMENT_TITLE) {
-                retrogradeText.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.retrograde))
-            }
+        // Planet-specific fine-tuning offsets
+        const planetOffset = this.#settings.RETROGRADE_OFFSET_BY_PLANET?.[this.#name.toLowerCase()] ?? {};
+        const dx = planetOffset.dx ?? 0;
+        const dy = planetOffset.dy ?? 0;
 
-            wrapper.appendChild(retrogradeText)
-        }
+        retroX = xPos + estimatedHalfWidth + dx;
+        retroY = yPos + planetHalfHeight + dy;
 
+    } else {
+        // Fallback: circle-based positioning (original method)
+        const chartCenterX = this.#settings.CHART_VIEWBOX_WIDTH / 2;
+        const chartCenterY = this.#settings.CHART_VIEWBOX_HEIGHT / 2;
+        const angleFromSymbolToCenter = Utils.positionToAngle(xPos, yPos, chartCenterX, chartCenterY);
+
+        const retrogradePosition = Utils.positionOnCircle(
+            xPos,
+            yPos,
+            this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS,
+            Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift)
+        );
+
+        retroX = retrogradePosition.x;
+        retroY = retrogradePosition.y;
+    }
+
+    // Create the retrograde text element
+    const retrogradeText = SVGUtils.SVGText(retroX, retroY, this.#settings.POINT_RETROGRADE_SYMBOL_CODE);
+
+    retrogradeText.setAttribute("font-family", this.#settings.CHART_FONT_FAMILY);
+    retrogradeText.setAttribute("text-anchor", "start");
+    retrogradeText.setAttribute("dominant-baseline", "central");
+    retrogradeText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
+    retrogradeText.setAttribute("fill", this.#settings.POINT_PROPERTIES_RETROGRADE_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
+
+    if (this.#settings.CLASS_POINT_RETROGRADE) {
+        retrogradeText.setAttribute('class', this.#settings.CLASS_POINT_RETROGRADE);
+    }
+
+    if (this.#settings.POINT_STROKE ?? false) {
+        retrogradeText.setAttribute('paint-order', 'stroke');
+        retrogradeText.setAttribute('stroke', this.#settings.POINT_STROKE_COLOR);
+        retrogradeText.setAttribute('stroke-width', this.#settings.POINT_STROKE_WIDTH);
+    }
+
+    if (this.#settings.INSERT_ELEMENT_TITLE) {
+        retrogradeText.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.retrograde));
+    }
+
+    wrapper.appendChild(retrogradeText);
+}
         /*
          *  Dignities
          */
