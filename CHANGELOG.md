@@ -14,6 +14,8 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Modern Build System**: Integrated Vite for faster development and modern bundling. @see [Migration to Vite](devdoc/features/feat_migration-to-vite.md)
 - **SVG Data Attributes**: Added `data-chart` and `data-symbol` attributes to SVG elements for easier DOM identification and interaction. @see [Data Attributes](devdoc/features/feat_data-attributes.md)
 - **Customizable Retrograde Symbol**: New `POINT_RETROGRADE_SYMBOL_CODE` setting to choose the symbol Px or R.
+- **Enhanced Retrograde Positioning**: Added `RETROGRADE_USE_CUSTOM_OFFSET` and `RETROGRADE_OFFSET_BY_PLANET` settings for precise, planet-specific alignment of retrograde symbols.
+- **Improved Examples**: Added a dedicated `retrograde.html` example and modernized the styling of existing example pages.
 - **Optional Ascendant Shift**: Add `CHART_ASCENDANT_SHIFT` const to rotate the chart so that the Ascendant (1st house cusp) is always positioned on the left (East) axis. If set to false, the chart is drawn with 0° Aries at the left position.
 
 ### Changed
