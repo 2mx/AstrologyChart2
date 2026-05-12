@@ -1,8 +1,5 @@
-# feat: implement optional          ascendant shift
- Add CHART_ASCENDANT_SHIFT         constant to control chart
-     rotation.                        When true (default), the          Ascendant is aligned to the
-     left axis.                       When false, the chart is
-     drawn with 0° Aries at the        left position.
+# feat: implement optional ascendant east
+Add CHART_ASCENDANT_EAST constant to control chart rotation. When true (default), the Ascendant is aligned to the left axis. When false, the chart is drawn with 0° Aries at the left position.
  
 ## fix Dynamic Axis Label Alignment
 - **Issue**: Main axis labels (AS, DS, MC, IC) were overlapping with the zodiac sign circle when the chart was not rotated.

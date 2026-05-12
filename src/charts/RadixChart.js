@@ -167,7 +167,7 @@ class RadixChart extends Chart {
      * @return {Number}
      */
     getAscendantShift() {
-      if(!this.#settings.CHART_ASCENDANT_SHIFT){
+      if(!this.#settings.CHART_ASCENDANT_EAST){
         return Utils.DEG_180;
       }
         return (this.#data?.cusps[0]?.angle ?? 0) + Utils.DEG_180

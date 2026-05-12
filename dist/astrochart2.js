@@ -21,7 +21,7 @@
   const CHART_ALLOW_HOUSE_OVERLAP = false;
   const CHART_DRAW_MAIN_AXIS = true;
   const CHART_STROKE_WITH_COLOR = false;
-  const CHART_ASCENDANT_SHIFT = true;
+  const CHART_ASCENDANT_EAST = true;
   const CLASS_SIGN_SEGMENT = "";
   const CLASS_SIGN = "";
   const CLASS_AXIS = "";
@@ -34,7 +34,7 @@
   const Universe$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     CHART_ALLOW_HOUSE_OVERLAP,
-    CHART_ASCENDANT_SHIFT,
+    CHART_ASCENDANT_EAST,
     CHART_CENTER_SIZE,
     CHART_DRAW_MAIN_AXIS,
     CHART_FONT_FAMILY,
@@ -206,7 +206,7 @@
     }
   };
   const POINT_PROPERTIES_DIGNITY_OFFSET = 6;
-  const POINT_RETROGRADE_SYMBOL_CODE$1 = "M";
+  const POINT_RETROGRADE_SYMBOL_CODE = "M";
   const POINT_COLLISION_RADIUS = 12;
   const ANGLE_TEMPLATE = "${angle}^";
   const CLASS_CELESTIAL = "";
@@ -243,7 +243,7 @@
     POINT_PROPERTIES_SHOW_SIGN,
     POINT_PROPERTIES_SIGN_COLOR,
     POINT_PROPERTIES_SIGN_OFFSET,
-    POINT_RETROGRADE_SYMBOL_CODE: POINT_RETROGRADE_SYMBOL_CODE$1,
+    POINT_RETROGRADE_SYMBOL_CODE,
     POINT_STROKE,
     POINT_STROKE_COLOR,
     POINT_STROKE_LINECAP,
@@ -446,7 +446,6 @@
     static SYMBOL_DS_CODE = "f";
     static SYMBOL_MC_CODE = "d";
     static SYMBOL_IC_CODE = "e";
-    static SYMBOL_RETROGRADE_CODE = POINT_RETROGRADE_SYMBOL_CODE$1;
     static SYMBOL_CONJUNCTION_CODE = "!";
     static SYMBOL_OPPOSITION_CODE = '"';
     static SYMBOL_SQUARE_CODE = "#";
@@ -1959,7 +1958,7 @@
      * @return {Number}
      */
     getAscendantShift() {
-      if (!this.#settings.CHART_ASCENDANT_SHIFT) {
+      if (!this.#settings.CHART_ASCENDANT_EAST) {
         return Utils.DEG_180;
       }
       return (this.#data?.cusps[0]?.angle ?? 0) + Utils.DEG_180;

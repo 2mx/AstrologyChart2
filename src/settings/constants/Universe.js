@@ -103,7 +103,7 @@ export const CHART_STROKE_WITH_COLOR = false;
  * @type {boolean}
  * @default true
  */
-export const CHART_ASCENDANT_SHIFT = true;
+export const CHART_ASCENDANT_EAST = true;
 
 
 /**
