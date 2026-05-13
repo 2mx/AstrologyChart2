@@ -22,6 +22,9 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **New Planet Distribution algorithm**: Iterative force-directed algorithm for planet distribution to prevent overlaps and stack overflow errors.
 - **Improved Rendering**: Aspect lines now have a center gap for the symbol, and pointer lines no longer cross planet symbols.
 
+### Removed
+- **CSS Class Settings**: Removed all `CLASS_*` settings (e.g., `CLASS_CELESTIAL`, `CLASS_SIGN`, `CLASS_AXIS`) and their implementation. These were redundant since the same identification can be achieved using the new SVG dataset attributes.
+
 ### Fixed
 - **Ruler Alignment**: Corrected the alignment of the ruler (ruler) to display zodiac degrees correctly.
 

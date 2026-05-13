@@ -185,9 +185,7 @@ class AspectUtils {
                 line1.setAttribute("stroke-width", settings.CHART_STROKE);
             }
 
-            if (settings.CLASS_SIGN_ASPECT_LINE) {
-                line1.setAttribute("class", settings.CLASS_SIGN_ASPECT_LINE)
-            }
+
 
             const line2 = SVGUtils.SVGLine(splitLine2[0].x, splitLine2[0].y, splitLine2[1].x, splitLine2[1].y)
             line2.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
@@ -198,9 +196,7 @@ class AspectUtils {
                 line2.setAttribute("stroke-width", settings.CHART_STROKE);
             }
 
-            if (settings.CLASS_SIGN_ASPECT_LINE) {
-                line2.setAttribute("class", settings.CLASS_SIGN_ASPECT_LINE)
-            }
+
 
             aspectGroup.appendChild(line1);
             aspectGroup.appendChild(line2);
@@ -230,10 +226,6 @@ class AspectUtils {
             symbol.setAttribute("dominant-baseline", "middle")
             symbol.setAttribute("font-size", settings.ASPECTS_FONT_SIZE);
             symbol.setAttribute("fill", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
-
-            if (settings.CLASS_SIGN_ASPECT) {
-                symbol.setAttribute("class", settings.CLASS_SIGN_ASPECT + ' ' + settings.CLASS_SIGN_ASPECT + '--' + asp.aspect.name.toLowerCase())
-            }
 
             if (settings.INSERT_ELEMENT_TITLE) {
                 symbol.appendChild(SVGUtils.SVGTitle(settings.ELEMENT_TITLES.aspects[asp.aspect.name.toLowerCase()]))

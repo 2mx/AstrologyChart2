@@ -216,52 +216,6 @@ export const POINT_COLLISION_RADIUS = 12
 export const ANGLE_TEMPLATE = "${angle}^"
 
 /**
-* Classes for points
-* ====================================
-*/
-
-/**
-* Class for Celestial Bodies (Planet / Asteroid)
-* and Celestial Points (northnode, southnode, lilith)
-* @constant
-* @type {String}
-* @default ""
-*/
-export const CLASS_CELESTIAL = '';
-
-/**
-* CSS class for point angle text element
-* @constant
-* @type {String}
-* @default ""
-*/
-export const CLASS_POINT_ANGLE = '';
-
-/**
-* CSS class for point sign text element
-* @constant
-* @type {String}
-* @default ""
-*/
-export const CLASS_POINT_SIGN = '';
-
-/**
-* CSS class for retrograde symbol text element
-* @constant
-* @type {String}
-* @default ""
-*/
-export const CLASS_POINT_RETROGRADE = '';
-
-/**
-* CSS class for dignity symbol text element
-* @constant
-* @type {String}
-* @default ""
-*/
-export const CLASS_POINT_DIGNITY = '';
-
-/**
 * Add a stroke around all points
 * ====================================
 */

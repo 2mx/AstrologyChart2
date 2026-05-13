@@ -309,10 +309,6 @@ class RadixChart extends Chart {
             }
 
 
-            if (this.#settings.CLASS_SIGN) {
-                symbol.setAttribute('class', this.#settings.CLASS_SIGN + ' ' + this.#settings.CLASS_SIGN + '--' + SYMBOL_SIGNS[symbolIndex].toLowerCase());
-            }
-
             if (this.#settings.SYMBOL_STROKE) {
                 symbol.setAttribute('paint-order', 'stroke');
                 symbol.setAttribute('stroke', this.#settings.SYMBOL_STROKE_COLOR);
@@ -339,10 +335,6 @@ class RadixChart extends Chart {
                 segment.setAttribute("fill", this.#settings.CHART_STROKE_ONLY ? "none" : COLORS_SIGNS[symbolIndex]);
                 segment.setAttribute("stroke", this.#settings.CHART_STROKE_ONLY ? this.#settings.CIRCLE_COLOR : "none");
                 segment.setAttribute("stroke-width", this.#settings.CHART_STROKE_ONLY ? this.#settings.CHART_STROKE : 0);
-            }
-
-            if (this.#settings.CLASS_SIGN_SEGMENT) {
-                segment.setAttribute('class', this.#settings.CLASS_SIGN_SEGMENT + ' ' + this.#settings.CLASS_SIGN_SEGMENT + SYMBOL_SIGNS[symbolIndex].toLowerCase());
             }
 
             return segment
@@ -619,10 +611,6 @@ class RadixChart extends Chart {
                 symbolType: 'axis',
                 symbolName: axis.name
             });
-
-            if (this.#settings.CLASS_AXIS) {
-                symbol.setAttribute('class', this.#settings.CLASS_AXIS + ' ' + this.#settings.CLASS_AXIS + '--' + axis.name.toLowerCase());
-            }
 
             if (this.#settings.INSERT_ELEMENT_TITLE) {
                 symbol.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.axis[axis.name]))

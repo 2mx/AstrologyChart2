@@ -107,42 +107,6 @@ export const CHART_ASCENDANT_EAST = true;
 
 
 /**
- * All classnames
- */
-
-/**
- * Class for the sign segment, behind the actual sign
- * @type {string}
- */
-export const CLASS_SIGN_SEGMENT = '';
-
-/**
- * Class for the sign
- * If not empty, another class will be added using same string, with a modifier like --sign_name
- * @type {string}
- */
-export const CLASS_SIGN = '';
-
-/**
- * Class for axis Ascendant, Midheaven, Descendant and Imum Coeli
- * If not empty, another class will be added using same string, with a modifier like --axis_name
- * @type {string}
- */
-export const CLASS_AXIS = '';
-
-/**
- * Class for the aspect character
- * @type {string}
- */
-export const CLASS_SIGN_ASPECT = '';
-
-/**
- * Class for aspect lines
- * @type {string}
- */
-export const CLASS_SIGN_ASPECT_LINE = '';
-
-/**
  * Use planet color for the chart line next to a planet
  * @type {boolean}
  */

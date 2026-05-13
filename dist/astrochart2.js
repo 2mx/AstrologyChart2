@@ -22,11 +22,6 @@
   const CHART_DRAW_MAIN_AXIS = true;
   const CHART_STROKE_WITH_COLOR = false;
   const CHART_ASCENDANT_EAST = true;
-  const CLASS_SIGN_SEGMENT = "";
-  const CLASS_SIGN = "";
-  const CLASS_AXIS = "";
-  const CLASS_SIGN_ASPECT = "";
-  const CLASS_SIGN_ASPECT_LINE = "";
   const PLANET_LINE_USE_PLANET_COLOR = false;
   const DRAW_RULER_MARK = true;
   const FONT_ASTRONOMICON_LOAD = true;
@@ -46,11 +41,6 @@
     CHART_STROKE_WITH_COLOR,
     CHART_VIEWBOX_HEIGHT,
     CHART_VIEWBOX_WIDTH,
-    CLASS_AXIS,
-    CLASS_SIGN,
-    CLASS_SIGN_ASPECT,
-    CLASS_SIGN_ASPECT_LINE,
-    CLASS_SIGN_SEGMENT,
     DRAW_RULER_MARK,
     FONT_ASTRONOMICON_LOAD,
     FONT_ASTRONOMICON_PATH,
@@ -209,11 +199,6 @@
   const POINT_RETROGRADE_SYMBOL_CODE = "M";
   const POINT_COLLISION_RADIUS = 12;
   const ANGLE_TEMPLATE = "${angle}^";
-  const CLASS_CELESTIAL = "";
-  const CLASS_POINT_ANGLE = "";
-  const CLASS_POINT_SIGN = "";
-  const CLASS_POINT_RETROGRADE = "";
-  const CLASS_POINT_DIGNITY = "";
   const POINT_STROKE = false;
   const POINT_STROKE_COLOR = "#fff";
   const POINT_STROKE_WIDTH = 2;
@@ -222,11 +207,6 @@
   const Point$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     ANGLE_TEMPLATE,
-    CLASS_CELESTIAL,
-    CLASS_POINT_ANGLE,
-    CLASS_POINT_DIGNITY,
-    CLASS_POINT_RETROGRADE,
-    CLASS_POINT_SIGN,
     POINT_COLLISION_RADIUS,
     POINT_PROPERTIES_ANGLE_OFFSET,
     POINT_PROPERTIES_ANGLE_SIZE,
@@ -1278,18 +1258,12 @@
         } else {
           line1.setAttribute("stroke-width", settings.CHART_STROKE);
         }
-        if (settings.CLASS_SIGN_ASPECT_LINE) {
-          line1.setAttribute("class", settings.CLASS_SIGN_ASPECT_LINE);
-        }
         const line2 = SVGUtils.SVGLine(splitLine2[0].x, splitLine2[0].y, splitLine2[1].x, splitLine2[1].y);
         line2.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
         if (settings.CHART_STROKE_MINOR_ASPECT && !(asp.aspect.isMajor ?? false)) {
           line2.setAttribute("stroke-width", settings.CHART_STROKE_MINOR_ASPECT);
         } else {
           line2.setAttribute("stroke-width", settings.CHART_STROKE);
-        }
-        if (settings.CLASS_SIGN_ASPECT_LINE) {
-          line2.setAttribute("class", settings.CLASS_SIGN_ASPECT_LINE);
         }
         aspectGroup.appendChild(line1);
         aspectGroup.appendChild(line2);
@@ -1311,9 +1285,6 @@
         symbol.setAttribute("dominant-baseline", "middle");
         symbol.setAttribute("font-size", settings.ASPECTS_FONT_SIZE);
         symbol.setAttribute("fill", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
-        if (settings.CLASS_SIGN_ASPECT) {
-          symbol.setAttribute("class", settings.CLASS_SIGN_ASPECT + " " + settings.CLASS_SIGN_ASPECT + "--" + asp.aspect.name.toLowerCase());
-        }
         if (settings.INSERT_ELEMENT_TITLE) {
           symbol.appendChild(SVGUtils.SVGTitle(settings.ELEMENT_TITLES.aspects[asp.aspect.name.toLowerCase()]));
         }
@@ -1494,9 +1465,6 @@
       const wrapper = SVGUtils.SVGGroup();
       const symbol = SVGUtils.SVGSymbol(this.#name, xPos, yPos);
       SVGUtils.applyDataset(symbol, dataset);
-      if (this.#settings.CLASS_CELESTIAL) {
-        symbol.setAttribute("class", this.#settings.CLASS_CELESTIAL + " " + this.#settings.CLASS_CELESTIAL + "--" + this.#name.toLowerCase());
-      }
       if (this.#settings.POINT_STROKE ?? false) {
         symbol.setAttribute("paint-order", "stroke");
         symbol.setAttribute("stroke", this.#settings.POINT_STROKE_COLOR);
@@ -1535,9 +1503,6 @@
         angleInSignText.setAttribute("dominant-baseline", "middle");
         angleInSignText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_ANGLE_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
         angleInSignText.setAttribute("fill", this.#settings.POINT_PROPERTIES_ANGLE_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
-        if (this.#settings.CLASS_POINT_ANGLE) {
-          angleInSignText.setAttribute("class", this.#settings.CLASS_POINT_ANGLE + " " + this.#settings.CLASS_POINT_ANGLE + "--" + angle);
-        }
         if (this.#settings.POINT_STROKE ?? false) {
           angleInSignText.setAttribute("paint-order", "stroke");
           angleInSignText.setAttribute("stroke", this.#settings.POINT_STROKE_COLOR);
@@ -1557,9 +1522,6 @@
           signText.setAttribute("fill", this.#settings.POINT_PROPERTIES_SIGN_COLOR);
         } else {
           signText.setAttribute("fill", this.#settings.SIGN_COLORS[symbolIndex] || this.#settings.POINT_PROPERTIES_COLOR);
-        }
-        if (this.#settings.CLASS_POINT_SIGN) {
-          signText.setAttribute("class", this.#settings.CLASS_POINT_SIGN + " " + this.#settings.CLASS_POINT_SIGN + "--" + this.#sign.toLowerCase());
         }
         if (this.#settings.POINT_STROKE ?? false) {
           signText.setAttribute("paint-order", "stroke");
@@ -1599,9 +1561,6 @@
         retrogradeText.setAttribute("dominant-baseline", "central");
         retrogradeText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_RETROGRADE_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
         retrogradeText.setAttribute("fill", this.#settings.POINT_PROPERTIES_RETROGRADE_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
-        if (this.#settings.CLASS_POINT_RETROGRADE) {
-          retrogradeText.setAttribute("class", this.#settings.CLASS_POINT_RETROGRADE);
-        }
         if (this.#settings.POINT_STROKE ?? false) {
           retrogradeText.setAttribute("paint-order", "stroke");
           retrogradeText.setAttribute("stroke", this.#settings.POINT_STROKE_COLOR);
@@ -1620,9 +1579,6 @@
         dignitiesText.setAttribute("dominant-baseline", "middle");
         dignitiesText.setAttribute("font-size", this.#settings.POINT_PROPERTIES_DIGNITY_SIZE || this.#settings.POINT_PROPERTIES_FONT_SIZE);
         dignitiesText.setAttribute("fill", this.#settings.POINT_PROPERTIES_DIGNITY_COLOR || this.#settings.POINT_PROPERTIES_COLOR);
-        if (this.#settings.CLASS_POINT_DIGNITY) {
-          dignitiesText.setAttribute("class", this.#settings.CLASS_POINT_DIGNITY + " " + this.#settings.CLASS_POINT_DIGNITY + "--" + dignitiesText.textContent);
-        }
         if (this.#settings.POINT_STROKE ?? false) {
           dignitiesText.setAttribute("paint-order", "stroke");
           dignitiesText.setAttribute("stroke", this.#settings.POINT_STROKE_COLOR);
@@ -2071,9 +2027,6 @@
         } else {
           symbol.setAttribute("fill", this.#settings.SIGN_COLORS[symbolIndex] ?? this.#settings.CHART_SIGNS_COLOR);
         }
-        if (this.#settings.CLASS_SIGN) {
-          symbol.setAttribute("class", this.#settings.CLASS_SIGN + " " + this.#settings.CLASS_SIGN + "--" + SYMBOL_SIGNS[symbolIndex].toLowerCase());
-        }
         if (this.#settings.SYMBOL_STROKE) {
           symbol.setAttribute("paint-order", "stroke");
           symbol.setAttribute("stroke", this.#settings.SYMBOL_STROKE_COLOR);
@@ -2096,9 +2049,6 @@
           segment.setAttribute("fill", this.#settings.CHART_STROKE_ONLY ? "none" : COLORS_SIGNS[symbolIndex]);
           segment.setAttribute("stroke", this.#settings.CHART_STROKE_ONLY ? this.#settings.CIRCLE_COLOR : "none");
           segment.setAttribute("stroke-width", this.#settings.CHART_STROKE_ONLY ? this.#settings.CHART_STROKE : 0);
-        }
-        if (this.#settings.CLASS_SIGN_SEGMENT) {
-          segment.setAttribute("class", this.#settings.CLASS_SIGN_SEGMENT + " " + this.#settings.CLASS_SIGN_SEGMENT + SYMBOL_SIGNS[symbolIndex].toLowerCase());
         }
         return segment;
       };
@@ -2312,9 +2262,6 @@
           symbolType: "axis",
           symbolName: axis.name
         });
-        if (this.#settings.CLASS_AXIS) {
-          symbol.setAttribute("class", this.#settings.CLASS_AXIS + " " + this.#settings.CLASS_AXIS + "--" + axis.name.toLowerCase());
-        }
         if (this.#settings.INSERT_ELEMENT_TITLE) {
           symbol.appendChild(SVGUtils.SVGTitle(this.#settings.ELEMENT_TITLES.axis[axis.name]));
         }
