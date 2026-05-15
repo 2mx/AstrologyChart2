@@ -17,9 +17,11 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Enhanced Retrograde Positioning**: Added `RETROGRADE_USE_CUSTOM_OFFSET` and `RETROGRADE_OFFSET_BY_PLANET` settings for precise, planet-specific alignment of retrograde symbols.
 - **Optional Ascendant East**: Add `CHART_ASCENDANT_EAST` const to rotate the chart so that the Ascendant (1st house cusp) is always positioned on the left (East) axis. If set to false, the chart is drawn with 0° Aries at the left position.
 - **Improved Examples**: Added a dedicated `retrograde.html` example and modernized the styling of existing example pages.
+- **Dynamic Property Spacing**: Added `POINT_PROPERTIES_OFFSET_STEP` setting to control the distance between point properties (angle, sign, dignity) in the radial stack.
 
 ### Changed
 - **New Planet Distribution algorithm**: Iterative force-directed algorithm for planet distribution to prevent overlaps and stack overflow errors.
+- **Point Properties Layout**: Properties are now positioned dynamically to eliminate visual gaps when some elements (like the retrograde symbol) are absent.
 - **Improved Rendering**: Aspect lines now have a center gap for the symbol, and pointer lines no longer cross planet symbols.
 
 ### Removed

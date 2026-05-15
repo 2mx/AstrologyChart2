@@ -110,20 +110,29 @@ class Point {
         const chartCenterY = this.#settings.CHART_VIEWBOX_HEIGHT / 2
         const angleFromSymbolToCenter = Utils.positionToAngle(xPos, yPos, chartCenterX, chartCenterY)
 
+        let currentOffset = this.#settings.POINT_PROPERTIES_ANGLE_OFFSET;
+        const offsetStep = this.#settings.POINT_PROPERTIES_OFFSET_STEP;
+
         if (this.#settings.POINT_PROPERTIES_SHOW_ANGLE) {
-            angleInSign.call(this)
+            angleInSign.call(this, currentOffset)
+            currentOffset += offsetStep;
         }
 
         if (this.#settings.POINT_PROPERTIES_SHOW_SIGN && this.#sign !== null) {
-            showSign.call(this)
+            showSign.call(this, currentOffset)
+            currentOffset += offsetStep;
         }
 
         if (this.#settings.POINT_PROPERTIES_SHOW_RETROGRADE && this.#isRetrograde) {
-            retrograde.call(this,symbol)
+            retrograde.call(this, symbol, currentOffset)
+            // Retrograde only occupies space in the radial stack if custom offset is NOT used
+            if (!this.#settings.RETROGRADE_USE_CUSTOM_OFFSET) {
+                currentOffset += offsetStep;
+            }
         }
 
         if (this.#settings.POINT_PROPERTIES_SHOW_DIGNITY && this.getDignity()) {
-            dignities.call(this)
+            dignities.call(this, currentOffset)
         }
 
         if (this.#settings.INSERT_ELEMENT_TITLE) {
@@ -135,8 +144,8 @@ class Point {
         /*
          *  Angle in sign
          */
-        function angleInSign() {
-            const angleInSignPosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_ANGLE_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
+        function angleInSign(offset) {
+            const angleInSignPosition = Utils.positionOnCircle(xPos, yPos, offset * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
 
             // It is possible to rotate the text, when uncomment a line bellow.
             //textWrapper.setAttribute("transform", `rotate(${angleFromSymbolToCenter},${textPosition.x},${textPosition.y})`)
@@ -166,8 +175,8 @@ class Point {
         /*
         *  Show sign
         */
-        function showSign() {
-            const signPosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_SIGN_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
+        function showSign(offset) {
+            const signPosition = Utils.positionOnCircle(xPos, yPos, offset * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
 
             /**
              * Get the sign index
@@ -212,8 +221,9 @@ class Point {
  * since getBBox() is unreliable before DOM insertion.
  *
  * @param {SVGElement} symbolElement - The planet glyph SVG element
+ * @param {Number} offset - The current radial offset multiplier
  */
-function retrograde(symbolElement) {
+function retrograde(symbolElement, offset) {
     let retroX, retroY;
 
     if (this.#settings.RETROGRADE_USE_CUSTOM_OFFSET && symbolElement) {
@@ -249,7 +259,7 @@ function retrograde(symbolElement) {
         const retrogradePosition = Utils.positionOnCircle(
             xPos,
             yPos,
-            this.#settings.POINT_PROPERTIES_RETROGRADE_OFFSET * this.#settings.POINT_COLLISION_RADIUS,
+            offset * this.#settings.POINT_COLLISION_RADIUS,
             Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift)
         );
 
@@ -281,8 +291,8 @@ function retrograde(symbolElement) {
         /*
          *  Dignities
          */
-        function dignities() {
-            const dignitiesPosition = Utils.positionOnCircle(xPos, yPos, this.#settings.POINT_PROPERTIES_DIGNITY_OFFSET * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
+        function dignities(offset) {
+            const dignitiesPosition = Utils.positionOnCircle(xPos, yPos, offset * this.#settings.POINT_COLLISION_RADIUS, Utils.degreeToRadian(-angleFromSymbolToCenter, angleShift))
             const dignitiesText = SVGUtils.SVGText(dignitiesPosition.x, dignitiesPosition.y, this.getDignity())
             dignitiesText.setAttribute("font-family", "sans-serif");
             dignitiesText.setAttribute("text-anchor", "middle") // start, middle, end

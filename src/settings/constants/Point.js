@@ -30,7 +30,7 @@ export const POINT_PROPERTIES_SHOW_SIGN = false
  * @type {Boolean}
  * @default true
  */
-export const POINT_PROPERTIES_SHOW_DIGNITY = false
+export const POINT_PROPERTIES_SHOW_DIGNITY = true
 
 /*
  * Point retrograde symbol
@@ -178,6 +178,14 @@ export const RETROGRADE_OFFSET_BY_PLANET = {
   },
 }
 
+
+/*
+ * Offset multiplier between each property (angle, sign, dignity...)
+ * @constant
+ * @type {Number}
+ * @default 1.5
+ */
+export const POINT_PROPERTIES_OFFSET_STEP = 1.5
 
 /*
  * Dignity symbol offset multiplier
