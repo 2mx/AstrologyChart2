@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstrologyChart - Aspect System Demo</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module">
+        import { Universe, ORBS_ASPECTS_SYNASTRY, ORBS_ASPECTS_TRANSIT } from '../dist/astrochart2.js';
+
+        // Sample Data
+        const natalData = {
+            "points": [
+                { name: "Sun", angle: 0 },
+                { name: "Moon", angle: 90 },
+                { name: "Mars", angle: 125 },
+                { name: "Venus", angle: 60 },
+                { name: "Jupiter", angle: 180 },
+                { name: "Saturn", angle: 210 },
+                { name: "Uranus", angle: 270 },
+                { name: "Neptune", angle: 330 },
+                { name: "Pluto", angle: 45 }
+            ],
+            "cusps": [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(a => ({ angle: a }))
+        };
+
+        const transitData = {
+            "points": [
+                { name: "Sun", angle: 5 },     // Conj Natal Sun
+                { name: "Moon", angle: 95 },    // Conj Natal Moon
+                { name: "Mars", angle: 135 },   // Minor aspects region
+                { name: "Jupiter", angle: 182 }, // Conj Natal Jupiter
+                { name: "Saturn", angle: 15 },   // Semisextile/Semisquare region
+                { name: "Uranus", angle: 72 },   // Quintile Natal Sun (72°)
+                { name: "Neptune", angle: 150 }  // Quincunx Natal Sun
+            ],
+            "cusps": natalData.cusps
+        };
+
+        const universe = new Universe("paper");
+        console.log("Universe instance:", universe);
+        console.log("Universe version:", universe.version);
+        console.log("setSettings type:", typeof universe.setSettings);
+        
+        const radix = universe.radix();
+        radix.setData(natalData);
+        
+        const transit = universe.transit();
+        transit.setData(transitData);
+
+        window.updateAspects = (type, value) => {
+            if (type === 'filter') {
+                universe.setSettings({ ASPECTS_DISPLAY: value });
+            } else if (type === 'catalog') {
+                const catalog = value === 'synastry' ? ORBS_ASPECTS_SYNASTRY : ORBS_ASPECTS_TRANSIT;
+                universe.setSettings({ ORBS_ASPECTS_TRANSIT: catalog });
+            }
+            
+            // Re-draw aspects
+            transit.drawAspects();
+            document.getElementById('current-settings').innerText = JSON.stringify(universe.getSettings().ASPECTS_DISPLAY);
+        };
+
+        // Initial display
+        document.getElementById('current-settings').innerText = "major";
+
+    </script>
+    <style>
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .controls {
+            padding: 15px;
+            background: #f4f4f4;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .control-group { 
+            margin-bottom: 15px; 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        label { 
+            font-weight: bold; 
+            min-width: 120px;
+        }
+        button { 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            border: 1px solid #ccc;
+            background: #fff;
+            border-radius: 4px;
+            flex-grow: 1;
+            max-width: 150px;
+        }
+        button:hover { background: #e0e0e0; }
+        code { background: #eee; padding: 2px 5px; }
+        
+        #paper {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1 / 1;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.5rem; text-align: center; }
+            label { width: 100%; margin-bottom: 5px; }
+            button { max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aspect System Demonstration</h1>
+        <p class="description">This example shows context-specific orbs and dynamic filtering.</p>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Display Filter:</label>
+                <button onclick="updateAspects('filter', 'major')">Major Only</button>
+                <button onclick="updateAspects('filter', 'minor')">Minor Only</button>
+                <button onclick="updateAspects('filter', 'all')">Show All</button>
+            </div>
+            <div class="control-group">
+                <label>Transit Catalog:</label>
+                <button onclick="updateAspects('catalog', 'transit')">Transit Orbs</button>
+                <button onclick="updateAspects('catalog', 'synastry')">Synastry Orbs</button>
+            </div>
+            <div>
+                <strong>Current filter:</strong> <span id="current-settings"></span>
+            </div>
+        </div>
+
+        <div id="paper"></div>
+        
+        <div class="docs" style="margin-top: 20px; width: 100%;">
+            <h3>How it works:</h3>
+            <ul>
+                <li><strong>Major Only</strong>: Uses <code>ASPECTS_DISPLAY: "major"</code>.</li>
+                <li><strong>Show All</strong>: Includes minor aspects like Semisextile (30°) and Quincunx (150°).</li>
+                <li><strong>Orbs Selection</strong>: Switching to <i>Synastry</i> catalog increases the tolerance, causing more aspects to appear for the same planetary positions.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

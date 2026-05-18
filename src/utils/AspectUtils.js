@@ -1,5 +1,6 @@
 import Utils from './Utils.js'
 import SVGUtils from './SVGUtils.js';
+import { MAJOR_ASPECT_ANGLES } from '../settings/constants/Aspects.js'
 
 /**
  * @class
@@ -14,6 +15,32 @@ class AspectUtils {
         if (this instanceof AspectUtils) {
             throw Error('This is a static class and cannot be instantiated.');
         }
+    }
+
+    /**
+     * Returns true if the aspect is a major aspect.
+     * Based on MAJOR_ASPECT_ANGLES — replaces the isMajor flag on aspect objects.
+     *
+     * @param {Object} aspect - { name, angle, orb }
+     * @return {Boolean}
+     */
+    static isMajor(aspect) {
+        return MAJOR_ASPECT_ANGLES.has(aspect.angle)
+    }
+
+    /**
+     * Filters a complete aspect catalog to what should be displayed.
+     *
+     * @param {Array}  aspects - ORBS_ASPECTS_NATAL | ORBS_ASPECTS_TRANSIT | ORBS_ASPECTS_SYNASTRY
+     * @param {"major"|"minor"|"all"|Array<String>} filter
+     * @return {Array}
+     */
+    static filterAspects(aspects, filter = "major") {
+        if (filter === "all") return aspects
+        if (filter === "major") return aspects.filter(a => AspectUtils.isMajor(a))
+        if (filter === "minor") return aspects.filter(a => !AspectUtils.isMajor(a))
+        if (Array.isArray(filter)) return aspects.filter(a => filter.includes(a.name))
+        return aspects
     }
 
     /**
@@ -98,7 +125,7 @@ class AspectUtils {
          * Reorder aspects
          * Draw minor aspects first
          */
-        aspectsList.sort((a, b) => ((a.aspect.isMajor ?? false) === (b.aspect.isMajor ?? false)) ? 0 : (a.aspect.isMajor ?? false) ? 1 : -1)
+        aspectsList.sort((a, b) => (AspectUtils.isMajor(a.aspect) === AspectUtils.isMajor(b.aspect)) ? 0 : AspectUtils.isMajor(a.aspect) ? 1 : -1)
 
         const aspectGroups = [];
 
@@ -179,7 +206,7 @@ class AspectUtils {
             const line1 = SVGUtils.SVGLine(splitLine1[0].x, splitLine1[0].y, splitLine1[1].x, splitLine1[1].y)
             line1.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
 
-            if (settings.CHART_STROKE_MINOR_ASPECT && !(asp.aspect.isMajor ?? false)) {
+            if (settings.CHART_STROKE_MINOR_ASPECT && !AspectUtils.isMajor(asp.aspect)) {
                 line1.setAttribute("stroke-width", settings.CHART_STROKE_MINOR_ASPECT);
             } else {
                 line1.setAttribute("stroke-width", settings.CHART_STROKE);
@@ -190,7 +217,7 @@ class AspectUtils {
             const line2 = SVGUtils.SVGLine(splitLine2[0].x, splitLine2[0].y, splitLine2[1].x, splitLine2[1].y)
             line2.setAttribute("stroke", settings.ASPECT_COLORS[asp.aspect.name] ?? "#333");
 
-            if (settings.CHART_STROKE_MINOR_ASPECT && !(asp.aspect.isMajor ?? false)) {
+            if (settings.CHART_STROKE_MINOR_ASPECT && !AspectUtils.isMajor(asp.aspect)) {
                 line2.setAttribute("stroke-width", settings.CHART_STROKE_MINOR_ASPECT);
             } else {
                 line2.setAttribute("stroke-width", settings.CHART_STROKE);

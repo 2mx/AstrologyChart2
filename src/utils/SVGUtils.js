@@ -474,15 +474,18 @@ class SVGUtils {
                 element = quincunxSymbol(xPos, yPos);
                 break;
 
+            case "Semisextile":
             case SVGUtils.SYMBOL_SEMISEXTILE:
                 element = semisextileSymbol(xPos, yPos);
                 break;
 
+            case "Semisquare":
             case SVGUtils.SYMBOL_SEMISQUARE:
             case SVGUtils.SYMBOL_OCTILE:
                 element = semisquareSymbol(xPos, yPos);
                 break;
 
+            case "Trioctile":
             case SVGUtils.SYMBOL_TRIOCTILE:
             case SVGUtils.SYMBOL_SESQUISQUARE:
                 element = trioctileSymbol(xPos, yPos);
@@ -793,7 +796,7 @@ class SVGUtils {
          * Quintile
          */
         function quintileSymbol(xPos, yPos) {
-            return SVGUtils.SVGText(xPos, yPos, SVGUtils.SYMBOL_SEMISQUARE_CODE)
+            return SVGUtils.SVGText(xPos, yPos, SVGUtils.SYMBOL_QUINTILE_CODE)
         }
 
         function biquintileSymbol(xPos, yPos) {

@@ -9,13 +9,15 @@ import TransitChart from '../charts/TransitChart.js';
  * @classdesc An wrapper for all parts of graph.
  * @public
  */
-class Universe {
+export default class Universe {
 
     #SVGDocument
     #settings
     #radix
     #transit
     #aspectsWrapper
+
+    version = "0.7.3-setSettings"
 
     /**
      * @constructs
@@ -81,6 +83,16 @@ class Universe {
     }
 
     /**
+     * Set settings
+     * @param {Object} settings
+     * @return {Universe}
+     */
+    setSettings(settings) {
+        Object.assign(this.#settings, settings);
+        return this;
+    }
+
+    /**
      * Get current settings
      * @return {Object}
      */
@@ -132,9 +144,4 @@ class Universe {
             throw new Error(e)
         }
     }
-}
-
-export {
-    Universe as
-        default
 }

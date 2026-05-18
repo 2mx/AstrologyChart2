@@ -117,9 +117,17 @@ class TransitChart extends Chart {
 
         fromPoints = fromPoints ?? [...this.#data.points.filter(x => "aspect" in x ? x.aspect : true), ...this.#data.cusps.filter(x => x.aspect)]
         toPoints = toPoints ?? [...this.#radix.getData().points.filter(x => "aspect" in x ? x.aspect : true), ...this.#radix.getData().cusps.filter(x => x.aspect)]
-        aspects = aspects ?? this.#settings.DEFAULT_ASPECTS ?? DefaultSettings.DEFAULT_ASPECTS
 
-        return AspectUtils.getAspects(fromPoints, toPoints, aspects)
+        const catalog = aspects
+            ?? this.#settings.ORBS_ASPECTS_TRANSIT
+            ?? DefaultSettings.ORBS_ASPECTS_TRANSIT
+
+        const filter = this.#settings.ASPECTS_DISPLAY
+            ?? DefaultSettings.ASPECTS_DISPLAY
+            ?? "major"
+
+        const filtered = AspectUtils.filterAspects(catalog, filter)
+        return AspectUtils.getAspects(fromPoints, toPoints, filtered)
     }
 
     /**
