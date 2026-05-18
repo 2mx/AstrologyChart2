@@ -16,18 +16,20 @@ A JavaScript library with clean API and zero dependencies **for generating astro
 
 This is updated version of [AstroChart](https://github.com/Kibo/AstroChart). A completely rewritten code with modern JavaScript features, new API and new bugs ;)
 
-Please use [Discussions](https://github.com/Kibo/AstrologyChart2/discussions) for questons and new ideas or open [new Issue](https://github.com/Kibo/AstrologyChart2/issues) for bug report.
+Please use [Discussions](https://github.com/2mx/AstrologyChart2/discussions) for questons and new ideas or open [new Issue](https://github.com/2mx/AstrologyChart2/issues) for bug report.
 
 ### Examples
-- [Radix chart](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/radix.html)
-- [Transit chart](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/transit.html)
-- [Aspects System](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/aspects.html)
-- [Radix collision](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/collision.html)
-- [Radix scaling symbols](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/scaling.html)
-- [Stroke only](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/stroke.html)
-- [Symbols](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/symbols.html)
-- [Aspects Radix](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/radixAspects.html)
-- [Aspects Transit](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/transitAspects.html)
+- [Radix chart](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/radix.html)
+- [Transit chart](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/transit.html)
+- [New Aspects System](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/aspects.html)
+- [Radix collision](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/collision.html)
+- [Radix scaling symbols](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/scaling.html)
+- [Retrograde symbols](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/retrograde.html)
+- [Stroke only](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/stroke.html)
+- [Symbols](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/symbols.html)
+- [Interactive](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/interactive.html)
+- [Aspects Radix (Legacy)](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/radixAspects.html)
+- [Aspects Transit (Legacy)](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/transitAspects.html)
 
 ### How to use (ESM)
 ```html
@@ -73,7 +75,7 @@ angle:{Number}
 Sun, Moon, Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto, Chiron, Lilith, NNode, SNode.
 
 ### Chart settings
-Look into the [settings](https://github.com/Kibo/AstrologyChart2/tree/master/src/settings/constants).
+Look into the [settings](https://github.com/2mx/AstrologyChart2/tree/main-dev/src/settings/constants).
 ```
 const settings = {RADIX_POINTS_FONT_SIZE:24};
 const chart = new astrology.Universe('paper', settings);
@@ -95,8 +97,3 @@ Thanks to Roberto	Corona work, I could remove [the symbols drawn in the SVGPath]
 ```
 npm run doc
 ```
-
-### Future plans
-- Build and publish a public astrology API server (Ephemetris).
-- Build a public open source astrology application full of new ideas and modern approaches to astrology.
-- Design a computer system for interpreting astrological charts.
