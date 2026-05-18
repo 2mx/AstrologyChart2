@@ -1,6 +1,6 @@
 {
   "name": "astrochart2",
-  "version": "0.7.3",
+  "version": "0.9.0",
   "description": "A JavaScript for generating Astrology charts.",
   "keywords": [
     "astrology",
@@ -9,13 +9,16 @@
     "zodiac",
     "ephemeris"
   ],
-  "author": {
-    "name": "Tom Jurman",
-    "email": "tomasjurman@kibo.cz"
-  },
+  "author": "Laurent Melmoux",
+  "contributors": [
+    {
+      "name": "Tom Jurman",
+      "email": "tomasjurman@kibo.cz"
+    }
+  ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:Kibo/AstrologyChart2.git"
+    "url": "git@github.com:2mx/AstrologyChart2.git"
   },
   "license": "GPLV3",
   "type": "module",
