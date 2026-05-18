@@ -2,15 +2,11 @@
 
 Fork with additional settings, tweaks, etc.
 
-![Example Chart](https://raw.githubusercontent.com/bplace/AstrologyChart2/refs/heads/master/assets/chart-result.png)
-
-## Original Readme
-
 A JavaScript library with clean API and zero dependencies **for generating astrology charts**.
 
 It does not calculate any positions of the planets in Universe.
 
-**Version**: 0.7.3 (alfa)
+**Version**: 0.9.0
 
 - Pure Javascript implementation without dependencies
 - OOP style
@@ -32,7 +28,6 @@ Please use [Discussions](https://github.com/Kibo/AstrologyChart2/discussions) fo
 - [Symbols](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/symbols.html)
 - [Aspects Radix](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/radixAspects.html)
 - [Aspects Transit](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/transitAspects.html)
-- [Animation](#) TODO
 
 ### How to use
 ```
