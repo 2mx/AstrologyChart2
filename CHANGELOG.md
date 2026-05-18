@@ -8,20 +8,18 @@ versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
-**Base Integration**: Merged and rebasted on `bplace/master`, which includes `timotejroiko/master`.
-
 ### Added
+- **Modern Build System**: Integrated Vite for faster development and modern bundling. @see [Migration to Vite](devdoc/doc/migration-to-vite.md)
+- **SVG Data Attributes**: Added `data-chart` and `data-symbol` attributes to SVG elements for easier DOM identification and interaction. @see [Data Attributes](devdoc/doc/data-attributes.md)
+- **Customizable Retrograde Symbol**: New `POINT_RETROGRADE_SYMBOL_CODE` setting to choose the symbol Px or R.
+- **Enhanced Retrograde Positioning**: Added `RETROGRADE_USE_CUSTOM_OFFSET` and `RETROGRADE_OFFSET_BY_PLANET` settings for precise, planet-specific alignment of retrograde symbols.
+- **Optional Ascendant East**: Add `CHART_ASCENDANT_EAST` const to rotate the chart so that the Ascendant (1st house cusp) is always positioned on the left (East) axis. If set to false, the chart is drawn with 0° Aries at the left position.
 - **New Aspect Management System**: Separation of astronomical data from display preferences.
   - Context-specific catalogs: `ORBS_ASPECTS_NATAL`, `ORBS_ASPECTS_TRANSIT`, `ORBS_ASPECTS_SYNASTRY` with dedicated orbs.
   - Dynamic display filtering via `ASPECTS_DISPLAY` setting ("major", "minor", "all", or custom array).
   - New utility methods `AspectUtils.isMajor()` and `AspectUtils.filterAspects()`.
   - Added `Universe.setSettings()` to allow updating configuration at runtime.
   - @see [Aspects System](devdoc/doc/aspects-system.md)
-- **Modern Build System**: Integrated Vite for faster development and modern bundling. @see [Migration to Vite](devdoc/doc/migration-to-vite.md)
-- **SVG Data Attributes**: Added `data-chart` and `data-symbol` attributes to SVG elements for easier DOM identification and interaction. @see [Data Attributes](devdoc/doc/data-attributes.md)
-- **Customizable Retrograde Symbol**: New `POINT_RETROGRADE_SYMBOL_CODE` setting to choose the symbol Px or R.
-- **Enhanced Retrograde Positioning**: Added `RETROGRADE_USE_CUSTOM_OFFSET` and `RETROGRADE_OFFSET_BY_PLANET` settings for precise, planet-specific alignment of retrograde symbols.
-- **Optional Ascendant East**: Add `CHART_ASCENDANT_EAST` const to rotate the chart so that the Ascendant (1st house cusp) is always positioned on the left (East) axis. If set to false, the chart is drawn with 0° Aries at the left position.
 - **Improved Examples**: Added a dedicated `retrograde.html` example and modernized the styling of existing example pages.
 
 ### Changed
