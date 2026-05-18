@@ -24,8 +24,8 @@
         </div>
     </dialog>
 
-    <script src="../dist/astrochart2.js"></script>
-    <script>
+    <script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
         // Astronomicon symbol mapping based on src/settings/constants/Point.js and SVGUtils.js
         const SYMBOLS = {
             "Sun": "Q",
@@ -76,7 +76,7 @@
         };
 
         // Initialize Universe and Chart
-        const universe = new astrology.Universe('paper', settings);
+        const universe = new Universe('paper', settings);
         const chart = universe.radix();
         chart.setData(data);
 

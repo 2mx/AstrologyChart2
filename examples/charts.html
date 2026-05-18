@@ -21,8 +21,8 @@ Each chart is customizable.
 eruda.init();
 </script>
 
-<script src="../dist/astrochart2.js"></script>
-<script>
+<script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
 let data = {
 "points": [{
 name: "Moon",
@@ -115,7 +115,7 @@ angle: 90
 angle: 120
 }]
 }
-new astrology.Universe('chart1').radix().setData(data)
+new Universe('chart1').radix().setData(data)
 
 
 const settings = {
@@ -127,9 +127,9 @@ CHART_POINTS_COLOR: "#000",
 CHART_LINE_COLOR: "#aaa",
 CHART_TEXT_COLOR: "#aaa"
 }
-new astrology.Universe('chart2', settings).radix().setData(data)
+new Universe('chart2', settings).radix().setData(data)
 
-new astrology.Universe('chart3', {
+new Universe('chart3', {
 CHART_STROKE_ONLY: true
 }).radix().setData(data)
 

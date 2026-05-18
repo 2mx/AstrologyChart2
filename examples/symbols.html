@@ -15,8 +15,8 @@
 
   <div id="paper"></div>
 
-  <script src="../dist/astrochart2.js"></script>
-  <script>
+  <script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
     calibrate("Sun")
     calibrate("Moon")
     calibrate("Mercury")
@@ -64,22 +64,22 @@
       const cy = HEIGHT / 2
       const radius = Math.min(WIDTH / 2, HEIGHT / 2)
 
-      const SVGDocument = new astrology.Universe("paper").getSVGDocument()
+      const SVGDocument = new Universe("paper").getSVGDocument()
 
       for (let i = 0; i < NUMBER_OF_SIGNS; i++) {
-        const positions = astrology.Utils.positionOnCircle(cx, cy, radius, i * Math.PI / 6);
-        const line = astrology.SVGUtils.SVGLine(cx, cy, positions.x, positions.y);
+        const positions = Utils.positionOnCircle(cx, cy, radius, i * Math.PI / 6);
+        const line = SVGUtils.SVGLine(cx, cy, positions.x, positions.y);
         line.setAttribute("stroke", LINE_COLOR);
         SVGDocument.appendChild(line);
 
-        const circle = astrology.SVGUtils.SVGCircle(cx, cy, radius / NUMBER_OF_SIGNS * i);
+        const circle = SVGUtils.SVGCircle(cx, cy, radius / NUMBER_OF_SIGNS * i);
         circle.setAttribute("stroke", LINE_COLOR);
         circle.setAttribute("stroke-width", STROKE);
         SVGDocument.appendChild(circle);
 
         for (let n = 0; n < NUMBER_OF_SIGNS; n++) {
-          const symbolPosition = astrology.Utils.positionOnCircle(cx, cy, radius / NUMBER_OF_SIGNS * i, n * Math.PI / 6);
-          const symbol = astrology.SVGUtils.SVGSymbol(pointName, symbolPosition.x, symbolPosition.y)
+          const symbolPosition = Utils.positionOnCircle(cx, cy, radius / NUMBER_OF_SIGNS * i, n * Math.PI / 6);
+          const symbol = SVGUtils.SVGSymbol(pointName, symbolPosition.x, symbolPosition.y)
           symbol.setAttribute("font-family", "Astronomicon");
           symbol.setAttribute("text-anchor", "middle")
           symbol.setAttribute("dominant-baseline", "middle")

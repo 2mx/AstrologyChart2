@@ -9,8 +9,8 @@
 <body>
 <div id="paper"></div>
 
-<script src="../dist/astrochart2.js"></script>
-<script>
+<script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
     // fetch from server
     let data = {
         "points": [{"name": "Sun", "angle": 41.6191, "sign": "Taurus"}, {"name": "Moon", "angle": 326.3427, "sign": "Aquarius"}, {
@@ -173,7 +173,7 @@
         ASPECTS_FONT_SIZE: 24,
     };
 
-    new astrology.Universe('paper', settings).radix().setData(data)
+    new Universe('paper', settings).radix().setData(data)
 </script>
 
 </body>

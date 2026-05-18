@@ -18,6 +18,14 @@
     "url": "git@github.com:Kibo/AstrologyChart2.git"
   },
   "license": "GPLV3",
+  "type": "module",
+  "main": "./dist/astrochart2.js",
+  "module": "./dist/astrochart2.js",
+  "exports": {
+    ".": {
+      "import": "./dist/astrochart2.js"
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/plugin-transform-modules-commonjs": "^7.21.2",
@@ -33,7 +41,7 @@
     "dev": "vite",
     "watch": "vite build --watch --mode debug",
     "build": "vite build --mode debug && vite build --mode production",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "doc": "jsdoc -c jsdoc.json"
   }
 }

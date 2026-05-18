@@ -40,8 +40,8 @@
         <div class="paper" id="chart-large"></div>
     </div>
 
-    <script src="../dist/astrochart2.js"></script>
-    <script>
+    <script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
         const data = {
             "points": [
                 {"name": "Sun", "angle": 41.6191, "sign": "Taurus"},
@@ -67,7 +67,7 @@
         };
 
         // 1. Default
-        new astrology.Universe('chart-default').radix().setData(data);
+        new Universe('chart-default').radix().setData(data);
 
         // 2. Custom Offset
         const settingsCustom = {
@@ -75,7 +75,7 @@
             POINT_PROPERTIES_SHOW: true,
             POINT_PROPERTIES_ANGLE_OFFSET: 3
         };
-        new astrology.Universe('chart-custom-offset', settingsCustom).radix().setData(data);
+        new Universe('chart-custom-offset', settingsCustom).radix().setData(data);
 
         // 3. Large + Custom Offset
         const settingsLarge = {
@@ -86,7 +86,7 @@
             POINT_PROPERTIES_SHOW: true,
 POINT_PROPERTIES_SHOW_ANGLE:false
         };
-        new astrology.Universe('chart-large', settingsLarge).radix().setData(data);
+        new Universe('chart-large', settingsLarge).radix().setData(data);
     </script>
 </body>
 </html>

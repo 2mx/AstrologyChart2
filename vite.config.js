@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
         entry: path.resolve(__dirname, 'src/index.js'),
         name: 'astrology',
         fileName: (format) => mode === 'debug' ? 'astrochart2.js' : 'astrochart2.min.js',
-        formats: ['umd'],
+        formats: ['es'],
       },
       sourcemap: true,
       emptyOutDir: false,
@@ -24,7 +24,7 @@ export default defineConfig(({ mode }) => {
       },
       rollupOptions: {
         output: {
-          globals: {},
+          exports: 'named',
         },
       },
     },

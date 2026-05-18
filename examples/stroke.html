@@ -14,8 +14,8 @@
 
     <div id="paper"></div>
 
-    <script src="../dist/astrochart2.js"></script>
-    <script>
+    <script type="module">
+import { Universe, RadixChart, TransitChart, Utils, SVGUtils } from '../dist/astrochart2.js';
       // fetch from server
       let data = {
       	"points":[{name:"Moon", angle:64}, {name:"Sun", angle:273}, {name:"Mercury", angle:194}, {name:"Venus", angle:158}, {name:"Mars", angle:304}, {name:"Jupiter", angle:229}, {name:"Saturn", angle:255}, {name:"Uranus", angle:350}, {name:"Neptune", angle:21}, {name:"Pluto", angle:233}, {name:"Lilith", angle:244}, {name:"Chiron", angle:339}, {name:"NNode", angle:285}],
@@ -23,7 +23,7 @@
       }
 
       const settings = {CHART_STROKE_ONLY:true}
-      new astrology.Universe('paper', settings).radix().setData( data )
+      new Universe('paper', settings).radix().setData( data )
     </script>
   </body>
 </html>
