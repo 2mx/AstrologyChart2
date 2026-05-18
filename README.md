@@ -1,10 +1,10 @@
 # Astrology Chart 2 Fork
 
-Fork with additional settings, tweaks, etc.
+This is a fork of [Kibo/AstrologyChart2](https://github.com/Kibo/AstrologyChart2) (v0.7.3), based on the work from [bplace](https://github.com/bplace/AstrologyChart2) and [timotejroiko](https://github.com/timotejroiko/AstrologyChart2) forks.
 
 A JavaScript library with clean API and zero dependencies **for generating astrology charts**.
 
-**Version**: 0.9.0 (ESM Transition)
+**Version**: 0.9.0 (ESM Transition) — [Full Changelog](./CHANGELOG.md)
 
 - **Native ESM Support**: Modern ECMAScript Modules implementation.
 - **Improved Aspect Management**: Separation of astronomical data and display preferences.
