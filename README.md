@@ -4,15 +4,15 @@ Fork with additional settings, tweaks, etc.
 
 A JavaScript library with clean API and zero dependencies **for generating astrology charts**.
 
-It does not calculate any positions of the planets in Universe.
+**Version**: 0.9.0 (ESM Transition)
 
-**Version**: 0.9.0
-
-- Pure Javascript implementation without dependencies
-- OOP style
-- SVG graphics
-- Tested code
-- Fully configurable
+- **Native ESM Support**: Modern ECMAScript Modules implementation.
+- **Improved Aspect Management**: Separation of astronomical data and display preferences.
+- **Force-Directed Layout**: New algorithm for planet distribution to prevent overlaps.
+- **Vite Build System**: Modern development and bundling with Vite.
+- Pure Javascript implementation without dependencies.
+- SVG graphics with data-attributes for easy DOM manipulation.
+- Fully configurable and tested.
 
 This is updated version of [AstroChart](https://github.com/Kibo/AstroChart). A completely rewritten code with modern JavaScript features, new API and new bugs ;)
 
@@ -21,7 +21,7 @@ Please use [Discussions](https://github.com/Kibo/AstrologyChart2/discussions) fo
 ### Examples
 - [Radix chart](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/radix.html)
 - [Transit chart](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/transit.html)
-- [More charts on page](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/charts.html)
+- [Aspects System](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/aspects.html)
 - [Radix collision](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/collision.html)
 - [Radix scaling symbols](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/scaling.html)
 - [Stroke only](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/stroke.html)
@@ -29,15 +29,15 @@ Please use [Discussions](https://github.com/Kibo/AstrologyChart2/discussions) fo
 - [Aspects Radix](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/radixAspects.html)
 - [Aspects Transit](https://htmlpreview.github.io/?https://github.com/Kibo/AstrologyChart2/blob/master/examples/transitAspects.html)
 
-### How to use
-```
-<script src="../dist/astrochart2.js"></script>
-<script>
-	new astrology.Universe('paper').radix().setData( data )
+### How to use (ESM)
+```html
+<script type="module">
+    import { Universe } from "../dist/astrochart2.js";
+    new Universe('paper').radix().setData( data )
 </script>
 ```
 ### Data example
-```
+```javascript
 {
 "points":[{name:"Moon", angle:0}, {name:"Sun", angle:30}, {name:"Mercury", angle:60}, ... ],
 "cusps":[{angle:300}, {angle:340}, {angle:30}, {angle:60}, {angle:75}, {angle:90}, {angle:116}, {angle:172}, {angle:210}, {angle:236}, {angle:250}, {angle:274}]
@@ -79,10 +79,6 @@ const settings = {RADIX_POINTS_FONT_SIZE:24};
 const chart = new astrology.Universe('paper', settings);
 ```
 Note: All keys are uppercase.
-
-### Namespace
- - default namespace for this library is *astrology*
- - you can change it in [webpack.config.js](https://webpack.js.org/configuration/output/#outputlibrary)
 
 ### Astronomicon font
 - [Astronomicon font](https://astronomicon.co/en/astronomicon-fonts/)
