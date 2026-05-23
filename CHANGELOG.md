@@ -1,12 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
 ## [unreleased]
+
+## [0.9.0] — 2026-05-23
 
 ### Added
 - **Modern Build System**: Integrated Vite for faster development and modern bundling. @see [Migration to Vite](devdoc/doc/migration-to-vite.md)

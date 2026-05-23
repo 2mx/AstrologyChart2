@@ -16,7 +16,6 @@ A JavaScript library with clean API and zero dependencies **for generating astro
 
 This is updated version of [AstroChart](https://github.com/Kibo/AstroChart). A completely rewritten code with modern JavaScript features, new API and new bugs ;)
 
-Please use [Discussions](https://github.com/2mx/AstrologyChart2/discussions) for questons and new ideas or open [new Issue](https://github.com/2mx/AstrologyChart2/issues) for bug report.
 
 ### Examples
 - [Radix chart](https://htmlpreview.github.io/?https://github.com/2mx/AstrologyChart2/blob/main-dev/examples/radix.html)
