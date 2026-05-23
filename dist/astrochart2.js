@@ -1,8 +1,8 @@
 /*! 
       astrochart2
       A JavaScript for generating Astrology charts.
-      Version: 0.7.3
-      Author: Tom Jurman (tomasjurman@kibo.cz)
+      Version: 0.9.0
+      Author: undefined (undefined)
       Licence: GNUv3 (https://www.gnu.org/licenses/gpl-3.0.en.html)
      */
 const CHART_PADDING = 40;
